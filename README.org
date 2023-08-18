@@ -1,0 +1,116 @@
+#+title: 剪切板中转站
+
+* 介绍
+
+* 技术栈
+** 后端
+1. SpringBoot 3.0 + Kotlin
+2. Kotlin Exposed
+3. PostgreSQL
+
+** 前端
+Flutter
+
+* 功能
+** 文字剪切板列表
+** 图片剪切板列表
+** 文件共享列表
+
+* 构想
+** 文件共享列表
+1. 使用数据库存储对象
+2. 使用 *文件路径* 存储文件位置
+3. 传输的时候使用 *文件路径* 定位文件
+4. 定时删除
+5. 一定量的列表
+
+** common
+1. 手动传输对象
+2. 自动探测局域网内主机
+
+
+
+* Demo 实现
+** Demo1
+目标：传送文件，存储文件
+*** 手机端
+**** StreamBuilder
+1. if data == "hello"
+   then *buildConfirm*
+2. else
+   then *saveFile*
+*** 电脑端
+**** onOpen
+1. send *ping*
+**** onMessage
+1. if (ok)
+2. transfer image file data
+** Demo2
+*** 目标
+1. 传送到指定对端
+2. 请求所有对端名称
+
+*** 手机端
+1. 连接 ws ，注册 socket
+2. 查询所有对端
+3. 指定对端
+4. 选择文件
+5. 传输
+
+*** 电脑端
+1. onOpen
+   注册socket
+2. onMessage
+   接收数据
+   {fromuid, touid, message, data}
+   传输数据
+   socket = socketmap.get(touid)
+   socket.send ping
+   if (pong) {
+       socket.sendBinary(data)
+   }
+** Demo3
+目标：测试websocket decoder
+1. ItemA
+   - name: string
+   - age: int32
+2. ItemB
+   - message: string
+   - data: bytes
+
+测定结果：后端不支持 ItemA ItemB 同时解析
+
+** Demo4
+目标：扫瞄局域网内主机，是否开放8082端口
+** Demo5
+目标：url to download file and image
+
+** Demo6
+目标：测试android端调用 pasteboard.writeFiles
+* 工作流程
+** 展示存储数据
+*** 数据模型
+**** Text
+**** Image
+**** File
+*** 传输数据
+** [文本] 复制到本地
+** [图片/文件] 下载到本地
+** [文字] 分享剪切板
+** [图片/文件] 分享到对端
+** 上传到服务端
+** 删除数据
+
+** controller
+*** Problem
+global socketmap
+global datamap ?
+*** transfer-file-endpoint
+ping - pong
+*** transfer-image-endpoint
+
+* 扩展
+** 说明
+第一版是将数据存储在服务端
+** 功能
+KDE Connect 发送文件到对端

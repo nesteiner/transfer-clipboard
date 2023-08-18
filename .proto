@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+option java_outer_classname = "ProtobufData";
+option java_package = "com.transferclipboard.backend.protobuf";
+package protobuf;
+
+message TransferData {
+    enum DataType {
+        ERROR = 0;
+        MESSAGE = 1;
+        TEXT = 2;
+        IMAGE = 3;
+        FILE = 4;
+    }
+
+    string fromuid = 1;
+    string touid = 2;
+    DataType type = 3;
+    oneof data {
+        Text text = 4;
+        Image image = 5;
+        File file = 6;
+        string message = 7;
+        string error = 8;
+    }
+}
+
+message OnlineUsers {
+    repeated string users = 1;
+}
+
+message TransferQueryAllResponse {
+    enum DataType {
+        TEXT_LIST = 0;
+        IMAGE_LIST = 1;
+        FILE_LIST = 2;
+    }
+
+    DataType type = 1;
+    oneof data {
+        TextList texts = 2;
+        ImageList images = 3;
+        FileList files = 4;
+    }
+}
+
+message TransferQueryResponse {
+    enum DataType {
+        TEXT = 0;
+        IMAGE = 1;
+        FILE = 2;
+    }
+
+    DataType type = 1;
+    oneof data {
+        Text text = 2;
+        Image image = 3;
+        File file = 4;
+    }
+}
+
+message Text {
+    uint32 id = 1;
+    string text = 2;
+}
+
+message Image {
+    uint32 id = 1;
+    string name = 2;
+    string path = 3;
+    string size = 4;
+}
+
+message File {
+    uint32 id = 1;
+    string name = 2;
+    string path = 3;
+    string size = 4;
+}
+
+message TextList {
+    repeated Text list = 1;
+}
+
+message ImageList {
+    repeated Image list = 2;
+}
+
+message FileList {
+    repeated File list = 3;
+}

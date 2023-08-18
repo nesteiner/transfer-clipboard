@@ -1,0 +1,17 @@
+server:
+  port: 8082
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+
+spring:
+  exposed:
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost/transfer-clipboard
+    username: steiner
+    password: 779151714
+
+file:
+  storage:
+    url: /home/steiner/workspace/transfer-clipboard/storage
