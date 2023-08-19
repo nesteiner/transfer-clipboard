@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.util.*
 
 @Service
@@ -41,6 +42,8 @@ class FileService {
             it[this.path] = path
             it[this.size] = size
         } get Files.id
+
+        file.transferTo(File(path))
 
         return file {
             this.id = id.value

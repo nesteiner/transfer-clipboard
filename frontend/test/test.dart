@@ -1,11 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:path_provider/path_provider.dart';
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await getTemporaryDirectory();
-  } on Exception catch (exception) {
-    print(exception);
-  }
+void main() {
+  final nums = [1, 2, 3];
+  nums.insert(0, 10);
+  print(nums);
 }

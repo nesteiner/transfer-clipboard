@@ -108,6 +108,7 @@ const TransferQueryResponse$json = {
     {'1': 'text', '3': 2, '4': 1, '5': 11, '6': '.protobuf.Text', '9': 0, '10': 'text'},
     {'1': 'image', '3': 3, '4': 1, '5': 11, '6': '.protobuf.Image', '9': 0, '10': 'image'},
     {'1': 'file', '3': 4, '4': 1, '5': 11, '6': '.protobuf.File', '9': 0, '10': 'file'},
+    {'1': 'error', '3': 5, '4': 1, '5': 9, '9': 0, '10': 'error'},
   ],
   '4': [TransferQueryResponse_DataType$json],
   '8': [
@@ -122,6 +123,7 @@ const TransferQueryResponse_DataType$json = {
     {'1': 'TEXT', '2': 0},
     {'1': 'IMAGE', '2': 1},
     {'1': 'FILE', '2': 2},
+    {'1': 'ERROR', '2': 3},
   ],
 };
 
@@ -130,8 +132,9 @@ final $typed_data.Uint8List transferQueryResponseDescriptor = $convert.base64Dec
     'ChVUcmFuc2ZlclF1ZXJ5UmVzcG9uc2USPAoEdHlwZRgBIAEoDjIoLnByb3RvYnVmLlRyYW5zZm'
     'VyUXVlcnlSZXNwb25zZS5EYXRhVHlwZVIEdHlwZRIkCgR0ZXh0GAIgASgLMg4ucHJvdG9idWYu'
     'VGV4dEgAUgR0ZXh0EicKBWltYWdlGAMgASgLMg8ucHJvdG9idWYuSW1hZ2VIAFIFaW1hZ2USJA'
-    'oEZmlsZRgEIAEoCzIOLnByb3RvYnVmLkZpbGVIAFIEZmlsZSIpCghEYXRhVHlwZRIICgRURVhU'
-    'EAASCQoFSU1BR0UQARIICgRGSUxFEAJCBgoEZGF0YQ==');
+    'oEZmlsZRgEIAEoCzIOLnByb3RvYnVmLkZpbGVIAFIEZmlsZRIWCgVlcnJvchgFIAEoCUgAUgVl'
+    'cnJvciI0CghEYXRhVHlwZRIICgRURVhUEAASCQoFSU1BR0UQARIICgRGSUxFEAISCQoFRVJST1'
+    'IQA0IGCgRkYXRh');
 
 @$core.Deprecated('Use textDescriptor instead')
 const Text$json = {

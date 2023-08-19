@@ -83,6 +83,8 @@ class TransferEndpoint {
 
         session.basicRemote.sendBinary(data)
         logger.error("error occurs: ${throwable.message ?: "fuck"}")
+        throwable.printStackTrace()
+        socketmap.remove(uid);
     }
 
     @OnClose

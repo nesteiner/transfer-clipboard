@@ -122,6 +122,30 @@ public object TransferQueryResponseKt {
     public fun hasFile(): kotlin.Boolean {
       return _builder.hasFile()
     }
+
+    /**
+     * `string error = 5;`
+     */
+    public var error: kotlin.String
+      @JvmName("getError")
+      get() = _builder.getError()
+      @JvmName("setError")
+      set(value) {
+        _builder.setError(value)
+      }
+    /**
+     * `string error = 5;`
+     */
+    public fun clearError() {
+      _builder.clearError()
+    }
+    /**
+     * `string error = 5;`
+     * @return Whether the error field is set.
+     */
+    public fun hasError(): kotlin.Boolean {
+      return _builder.hasError()
+    }
     public val dataCase: com.transferclipboard.backend.protobuf.ProtobufData.TransferQueryResponse.DataCase
       @JvmName("getDataCase")
       get() = _builder.getDataCase()

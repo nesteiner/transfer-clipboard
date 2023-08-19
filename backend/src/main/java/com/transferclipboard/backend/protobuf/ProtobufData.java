@@ -4130,6 +4130,23 @@ public final class ProtobufData {
      */
     com.transferclipboard.backend.protobuf.ProtobufData.FileOrBuilder getFileOrBuilder();
 
+    /**
+     * <code>string error = 5;</code>
+     * @return Whether the error field is set.
+     */
+    boolean hasError();
+    /**
+     * <code>string error = 5;</code>
+     * @return The error.
+     */
+    java.lang.String getError();
+    /**
+     * <code>string error = 5;</code>
+     * @return The bytes for error.
+     */
+    com.google.protobuf.ByteString
+        getErrorBytes();
+
     com.transferclipboard.backend.protobuf.ProtobufData.TransferQueryResponse.DataCase getDataCase();
   }
   /**
@@ -4185,6 +4202,10 @@ public final class ProtobufData {
        * <code>FILE = 2;</code>
        */
       FILE(2),
+      /**
+       * <code>ERROR = 3;</code>
+       */
+      ERROR(3),
       UNRECOGNIZED(-1),
       ;
 
@@ -4200,6 +4221,10 @@ public final class ProtobufData {
        * <code>FILE = 2;</code>
        */
       public static final int FILE_VALUE = 2;
+      /**
+       * <code>ERROR = 3;</code>
+       */
+      public static final int ERROR_VALUE = 3;
 
 
       public final int getNumber() {
@@ -4229,6 +4254,7 @@ public final class ProtobufData {
           case 0: return TEXT;
           case 1: return IMAGE;
           case 2: return FILE;
+          case 3: return ERROR;
           default: return null;
         }
       }
@@ -4294,6 +4320,7 @@ public final class ProtobufData {
       TEXT(2),
       IMAGE(3),
       FILE(4),
+      ERROR(5),
       DATA_NOT_SET(0);
       private final int value;
       private DataCase(int value) {
@@ -4314,6 +4341,7 @@ public final class ProtobufData {
           case 2: return TEXT;
           case 3: return IMAGE;
           case 4: return FILE;
+          case 5: return ERROR;
           case 0: return DATA_NOT_SET;
           default: return null;
         }
@@ -4440,6 +4468,58 @@ public final class ProtobufData {
       return com.transferclipboard.backend.protobuf.ProtobufData.File.getDefaultInstance();
     }
 
+    public static final int ERROR_FIELD_NUMBER = 5;
+    /**
+     * <code>string error = 5;</code>
+     * @return Whether the error field is set.
+     */
+    public boolean hasError() {
+      return dataCase_ == 5;
+    }
+    /**
+     * <code>string error = 5;</code>
+     * @return The error.
+     */
+    public java.lang.String getError() {
+      java.lang.Object ref = "";
+      if (dataCase_ == 5) {
+        ref = data_;
+      }
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (dataCase_ == 5) {
+          data_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>string error = 5;</code>
+     * @return The bytes for error.
+     */
+    public com.google.protobuf.ByteString
+        getErrorBytes() {
+      java.lang.Object ref = "";
+      if (dataCase_ == 5) {
+        ref = data_;
+      }
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        if (dataCase_ == 5) {
+          data_ = b;
+        }
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4466,6 +4546,9 @@ public final class ProtobufData {
       if (dataCase_ == 4) {
         output.writeMessage(4, (com.transferclipboard.backend.protobuf.ProtobufData.File) data_);
       }
+      if (dataCase_ == 5) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, data_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4490,6 +4573,9 @@ public final class ProtobufData {
       if (dataCase_ == 4) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, (com.transferclipboard.backend.protobuf.ProtobufData.File) data_);
+      }
+      if (dataCase_ == 5) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, data_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4521,6 +4607,10 @@ public final class ProtobufData {
           if (!getFile()
               .equals(other.getFile())) return false;
           break;
+        case 5:
+          if (!getError()
+              .equals(other.getError())) return false;
+          break;
         case 0:
         default:
       }
@@ -4549,6 +4639,10 @@ public final class ProtobufData {
         case 4:
           hash = (37 * hash) + FILE_FIELD_NUMBER;
           hash = (53 * hash) + getFile().hashCode();
+          break;
+        case 5:
+          hash = (37 * hash) + ERROR_FIELD_NUMBER;
+          hash = (53 * hash) + getError().hashCode();
           break;
         case 0:
         default:
@@ -4812,6 +4906,12 @@ public final class ProtobufData {
             mergeFile(other.getFile());
             break;
           }
+          case ERROR: {
+            dataCase_ = 5;
+            data_ = other.data_;
+            onChanged();
+            break;
+          }
           case DATA_NOT_SET: {
             break;
           }
@@ -4868,6 +4968,12 @@ public final class ProtobufData {
                 dataCase_ = 4;
                 break;
               } // case 34
+              case 42: {
+                java.lang.String s = input.readStringRequireUtf8();
+                dataCase_ = 5;
+                data_ = s;
+                break;
+              } // case 42
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5377,6 +5483,99 @@ public final class ProtobufData {
         dataCase_ = 4;
         onChanged();
         return fileBuilder_;
+      }
+
+      /**
+       * <code>string error = 5;</code>
+       * @return Whether the error field is set.
+       */
+      @java.lang.Override
+      public boolean hasError() {
+        return dataCase_ == 5;
+      }
+      /**
+       * <code>string error = 5;</code>
+       * @return The error.
+       */
+      @java.lang.Override
+      public java.lang.String getError() {
+        java.lang.Object ref = "";
+        if (dataCase_ == 5) {
+          ref = data_;
+        }
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (dataCase_ == 5) {
+            data_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string error = 5;</code>
+       * @return The bytes for error.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getErrorBytes() {
+        java.lang.Object ref = "";
+        if (dataCase_ == 5) {
+          ref = data_;
+        }
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          if (dataCase_ == 5) {
+            data_ = b;
+          }
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string error = 5;</code>
+       * @param value The error to set.
+       * @return This builder for chaining.
+       */
+      public Builder setError(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        dataCase_ = 5;
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string error = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearError() {
+        if (dataCase_ == 5) {
+          dataCase_ = 0;
+          data_ = null;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>string error = 5;</code>
+       * @param value The bytes for error to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        dataCase_ = 5;
+        data_ = value;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -10326,22 +10525,22 @@ public final class ProtobufData {
       "\n\006images\030\003 \001(\0132\023.protobuf.ImageListH\000\022#\n" +
       "\005files\030\004 \001(\0132\022.protobuf.FileListH\000\"8\n\010Da" +
       "taType\022\r\n\tTEXT_LIST\020\000\022\016\n\nIMAGE_LIST\020\001\022\r\n" +
-      "\tFILE_LIST\020\002B\006\n\004data\"\344\001\n\025TransferQueryRe" +
+      "\tFILE_LIST\020\002B\006\n\004data\"\200\002\n\025TransferQueryRe" +
       "sponse\0226\n\004type\030\001 \001(\0162(.protobuf.Transfer" +
       "QueryResponse.DataType\022\036\n\004text\030\002 \001(\0132\016.p" +
       "rotobuf.TextH\000\022 \n\005image\030\003 \001(\0132\017.protobuf" +
       ".ImageH\000\022\036\n\004file\030\004 \001(\0132\016.protobuf.FileH\000" +
-      "\")\n\010DataType\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FIL" +
-      "E\020\002B\006\n\004data\" \n\004Text\022\n\n\002id\030\001 \001(\r\022\014\n\004text\030" +
-      "\002 \001(\t\"=\n\005Image\022\n\n\002id\030\001 \001(\r\022\014\n\004name\030\002 \001(\t" +
-      "\022\014\n\004path\030\003 \001(\t\022\014\n\004size\030\004 \001(\t\"<\n\004File\022\n\n\002" +
-      "id\030\001 \001(\r\022\014\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\014\n\004" +
-      "size\030\004 \001(\t\"(\n\010TextList\022\034\n\004list\030\001 \003(\0132\016.p" +
-      "rotobuf.Text\"*\n\tImageList\022\035\n\004list\030\002 \003(\0132" +
-      "\017.protobuf.Image\"(\n\010FileList\022\034\n\004list\030\003 \003" +
-      "(\0132\016.protobuf.FileB6\n&com.transferclipbo" +
-      "ard.backend.protobufB\014ProtobufDatab\006prot" +
-      "o3"
+      "\022\017\n\005error\030\005 \001(\tH\000\"4\n\010DataType\022\010\n\004TEXT\020\000\022" +
+      "\t\n\005IMAGE\020\001\022\010\n\004FILE\020\002\022\t\n\005ERROR\020\003B\006\n\004data\"" +
+      " \n\004Text\022\n\n\002id\030\001 \001(\r\022\014\n\004text\030\002 \001(\t\"=\n\005Ima" +
+      "ge\022\n\n\002id\030\001 \001(\r\022\014\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001" +
+      "(\t\022\014\n\004size\030\004 \001(\t\"<\n\004File\022\n\n\002id\030\001 \001(\r\022\014\n\004" +
+      "name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\014\n\004size\030\004 \001(\t\"(" +
+      "\n\010TextList\022\034\n\004list\030\001 \003(\0132\016.protobuf.Text" +
+      "\"*\n\tImageList\022\035\n\004list\030\002 \003(\0132\017.protobuf.I" +
+      "mage\"(\n\010FileList\022\034\n\004list\030\003 \003(\0132\016.protobu" +
+      "f.FileB6\n&com.transferclipboard.backend." +
+      "protobufB\014ProtobufDatab\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10370,7 +10569,7 @@ public final class ProtobufData {
     internal_static_protobuf_TransferQueryResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_protobuf_TransferQueryResponse_descriptor,
-        new java.lang.String[] { "Type", "Text", "Image", "File", "Data", });
+        new java.lang.String[] { "Type", "Text", "Image", "File", "Error", "Data", });
     internal_static_protobuf_Text_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_protobuf_Text_fieldAccessorTable = new

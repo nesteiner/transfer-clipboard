@@ -55,11 +55,13 @@ class TransferQueryResponse_DataType extends $pb.ProtobufEnum {
   static const TransferQueryResponse_DataType TEXT = TransferQueryResponse_DataType._(0, _omitEnumNames ? '' : 'TEXT');
   static const TransferQueryResponse_DataType IMAGE = TransferQueryResponse_DataType._(1, _omitEnumNames ? '' : 'IMAGE');
   static const TransferQueryResponse_DataType FILE = TransferQueryResponse_DataType._(2, _omitEnumNames ? '' : 'FILE');
+  static const TransferQueryResponse_DataType ERROR = TransferQueryResponse_DataType._(3, _omitEnumNames ? '' : 'ERROR');
 
   static const $core.List<TransferQueryResponse_DataType> values = <TransferQueryResponse_DataType> [
     TEXT,
     IMAGE,
     FILE,
+    ERROR,
   ];
 
   static final $core.Map<$core.int, TransferQueryResponse_DataType> _byValue = $pb.ProtobufEnum.initByValue(values);

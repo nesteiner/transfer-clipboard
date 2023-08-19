@@ -11,14 +11,22 @@ Widget buildImageCard(BuildContext context, protobuf.Image image, {
 }) {
   final state = context.read<GlobalState>();
   final serverUrl = state.serverUrl;
+
+  assert(image.name.isNotEmpty);
   final url = join(serverUrl, "api/download/image", image.name);
 
   final imageFromNetwork = Image.network(url, height: 100, width: 100,);
-  final imageDescription = Column(
+  final imageDescription = Row(
     children: [
       imageFromNetwork,
-      Text(image.name),
-      Text(image.size)
+      SizedBox(width: 10,),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(image.name),
+          Text(image.size)
+        ]
+      )
     ],
   );
 

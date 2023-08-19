@@ -9,6 +9,7 @@ import com.transferclipboard.backend.service.FileService
 import com.transferclipboard.backend.service.ImageService
 import com.transferclipboard.backend.service.TextService
 import jakarta.validation.Valid
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
@@ -26,6 +27,10 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/clipboard")
 @Validated
 class ClipboardController {
+    companion object {
+        val logger = LoggerFactory.getLogger(ClipboardController::class.java)
+    }
+
     @Autowired
     lateinit var textService: TextService
     @Autowired
@@ -73,6 +78,8 @@ class ClipboardController {
     @PostMapping("/image")
     fun insertImage(@RequestParam("file") file: MultipartFile): TransferQueryResponse {
         val result = imageService.insertOne(file)
+        logger.info("the result is ${result}")
+
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.IMAGE
             this.image = result

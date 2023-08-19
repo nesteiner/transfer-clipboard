@@ -3,6 +3,7 @@ package com.transferclipboard.backend.controller
 import com.transferclipboard.backend.service.FileService
 import com.transferclipboard.backend.service.ImageService
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -31,9 +32,10 @@ class ResourceController {
     }
 
     private fun findOne(name: String, response: HttpServletResponse, service: ImageService) {
-        val image = service.findOne(name)
-        if (image != null) {
-            val file = File(image.path)
+        val item = service.findOne(name)
+
+        if (item != null) {
+            val file = File(item.path)
             if (file.exists()) {
                 response.reset()
                 val buffer = ByteArray(1024)
@@ -57,9 +59,10 @@ class ResourceController {
     }
 
     private fun findOne(name: String, response: HttpServletResponse, service: FileService) {
-        val image = service.findOne(name)
-        if (image != null) {
-            val file = File(image.path)
+        val item = service.findOne(name)
+
+        if (item != null) {
+            val file = File(item.path)
             if (file.exists()) {
                 response.reset()
                 val buffer = ByteArray(1024)

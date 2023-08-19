@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/protobuf/.proto.pb.dart' as protobuf;
@@ -23,6 +26,7 @@ class DataPageState extends State<DataPage> {
   late List<protobuf.File> files;
   late String serverUrl;
   late String touid;
+  late String fromuid;
   final Dio dio = Dio();
   final Options options = Options(
     responseType: ResponseType.bytes,
@@ -31,11 +35,20 @@ class DataPageState extends State<DataPage> {
     }
   );
 
+  // for add
+  TextEditingController controller = TextEditingController();
+  // for update state
+  late void Function(void Function()) setStateTexts;
+  late void Function(void Function()) setStateImages;
+  late void Function(void Function()) setStateFiles;
+
   @override
   Widget build(BuildContext context) {
-
+    final state = context.read<GlobalState>();
+    serverUrl = state.serverUrl;
+    fromuid = state.fromuid;
     socket?.stream.listen((event) {
-      final data = event.cast<protobuf.TransferData>() as protobuf.TransferData;
+      final data = protobuf.TransferData.fromBuffer(event);
       if (data.type == TransferData_DataType.ERROR) {
         showDialog(
           context: context,
@@ -87,6 +100,7 @@ class DataPageState extends State<DataPage> {
                TextButton(
                  onPressed: () {
                    onPressCopyText(data.text);
+                   Navigator.of(context).pop();
                  },
 
                  child: const Text("Ok"),
@@ -115,6 +129,8 @@ class DataPageState extends State<DataPage> {
                   } else {
                     await onPressCopyFile(serverUrl, data.file);
                   }
+
+                  Navigator.of(context).pop();
                 },
 
                 child: const Text("Ok"),
@@ -125,65 +141,79 @@ class DataPageState extends State<DataPage> {
       }
     });
 
+    final child = Builder(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: "text",),
+              Tab(text: "image"),
+              Tab(text: "file")
+            ],
+          ),
+        ),
+
+        body: TabBarView(
+          children: [
+            buildTexts(context),
+            buildImages(context),
+            buildFiles(context)
+          ],
+        ),
+
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            onPressAdd(context);
+          },
+
+          child: const Icon(Icons.add),
+        ),
+      );
+    },);
 
     return DefaultTabController(
         length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: [
-                Tab(text: "text",),
-                Tab(text: "image"),
-                Tab(text: "file")
-              ],
-            ),
-          ),
-
-          body: TabBarView(
-            children: [
-              buildTexts(context),
-              buildImages(context),
-              buildFiles(context)
-            ],
-          ),
-        )
+        child: child
     );
   }
 
   Widget buildTexts(BuildContext context) {
-    final state = context.read<GlobalState>();
-    final serverUrl = state.serverUrl;
-
     return FutureBuilder(
       future: dio.get(join(serverUrl, "api", "clipboard/text"), options: options),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = protobuf.TransferQueryAllResponse.fromBuffer(snapshot.requireData.data);
-          final column = Column(
-            children: data.texts.list
-                .map(
-                    (text) => buildTextCard(
-                      context,
-                      text,
-                      onPressCopy: () {
-                        onPressCopyText(text);
-                      },
-                      onPressShare: () {
-                        onPressShareText(context, text);
-                      },
+          texts = data.texts.list.reversed.toList();
 
-                      onPressDelete: () async {
-                        await onPressDelete(serverUrl, "text", text.id);
-                      }
-                    ),
-            ).toList(),
-          );
+          return StatefulBuilder(builder: (context, setState) {
+            setStateTexts = setState;
+            final column = Column(
+                children: texts
+                    .map(
+                      (text) =>
+                      buildTextCard(
+                          context,
+                          text,
+                          onPressCopy: () {
+                            onPressCopyText(text);
+                          },
+                          onPressShare: () {
+                            onPressShareText(context, text);
+                          },
 
-          return SingleChildScrollView(
-            child: column,
-          );
+                          onPressDelete: () async {
+                            await onPressDelete(serverUrl, "text", text.id);
+                          }
+                      ),
+                ).toList(),
+            );
+
+            return SingleChildScrollView(
+              child: column,
+            );
+          });
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -192,38 +222,41 @@ class DataPageState extends State<DataPage> {
   }
 
   Widget buildImages(BuildContext context) {
-    final state = context.read<GlobalState>();
-    final serverUrl = state.serverUrl;
-
     return FutureBuilder(
       future: dio.get(join(serverUrl, "api", "clipboard/image"), options: options),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = protobuf.TransferQueryAllResponse.fromBuffer(snapshot.requireData.data);
-          final column = Column(
-            children: data.images.list.map(
-                    (image) => buildImageCard(
-                      context,
-                      image,
-                      onPressCopy: () async {
-                        await onPressCopyImage(serverUrl, image);
-                      },
+          images = data.images.list.reversed.toList();
 
-                      onPressShare: () {
-                        onPressShareImage(context, image);
-                      },
+          return StatefulBuilder(builder: (context, setState) {
+            setStateImages = setState;
+            final column = Column(
+              children: images.map(
+                      (image) => buildImageCard(
+                          context,
+                          image,
+                          onPressCopy: () async {
+                            await onPressCopyImage(serverUrl, image);
+                          },
 
-                      onPressDelete: () async {
-                        await onPressDelete(serverUrl, "image", image.id);
-                      }
-                    )).toList(),
-          );
+                          onPressShare: () {
+                            onPressShareImage(context, image);
+                          },
 
-          return SingleChildScrollView(
-            child: column,
-          );
+                          onPressDelete: () async {
+                            await onPressDelete(serverUrl, "image", image.id);
+                          }
+                  )).toList(),
+            );
+
+            return SingleChildScrollView(
+              child: column,
+            );
+          });
+
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -232,39 +265,42 @@ class DataPageState extends State<DataPage> {
   }
 
   Widget buildFiles(BuildContext context) {
-    final state = context.read<GlobalState>();
-    final serverUrl = state.serverUrl;
-
     return FutureBuilder(
       future: dio.get(join(serverUrl, "api", "clipboard/file"), options: options),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = protobuf.TransferQueryAllResponse.fromBuffer(snapshot.requireData.data);
-          final column = Column(
-            children: data.files.list
-                .map(
-                    (file) => buildFileCard(
-                        context,
-                        file,
-                        onPressCopy: () async {
-                          await onPressCopyFile(serverUrl, file);
-                        },
+          files = data.files.list.reversed.toList();
 
-                      onPressShare: () {
-                        onPressShareFile(context, file);
-                      },
+          return StatefulBuilder(builder: (context, setState) {
+            setStateFiles = setState;
+            final column = Column(
+              children: files
+                  .map(
+                      (file) => buildFileCard(
+                          context,
+                          file,
+                          onPressCopy: () async {
+                            await onPressCopyFile(serverUrl, file);
+                          },
 
-                      onPressDelete: () async {
-                        await onPressDelete(serverUrl, "image", file.id);
-                      }
-                )).toList(),
-          );
+                          onPressShare: () {
+                            onPressShareFile(context, file);
+                          },
 
-          return SingleChildScrollView(
-            child: column,
-          );
+                          onPressDelete: () async {
+                            await onPressDelete(serverUrl, "image", file.id);
+                          }
+                      )).toList(),
+            );
+
+            return SingleChildScrollView(
+              child: column,
+            );
+          });
+
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -277,40 +313,77 @@ class DataPageState extends State<DataPage> {
   }
 
   Future<void> onPressCopyImage(String serverUrl, protobuf.Image image) async {
-    final directory = await getApplicationCacheDirectory();
-    final path = join(directory.path, "tempimage");
     final url = join(serverUrl, "api/download/image", image.name);
-    await dio.download(url, path);
-    await Pasteboard.writeFiles([path]);
+
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      final directory = await getApplicationCacheDirectory();
+      String path = join(directory.path, "tempimage");
+      if (Platform.isWindows) {
+        final subfix = image.name.split(".").lastOrNull;
+        if (subfix != null) {
+          path = join(directory.path, "tempimage.$subfix");
+        }
+      }
+      await dio.download(url, path);
+      await Pasteboard.writeFiles([path]);
+    } else {
+      final path = await FilePicker.platform.saveFile();
+      if (path != null) {
+        await dio.download(url, path);
+      }
+    }
   }
 
   Future<void> onPressCopyFile(String serverUrl, protobuf.File file) async {
-    final directory = await getApplicationCacheDirectory();
-    final path = join(directory.path, "tempfile");
     final url = join(serverUrl, "api/download/file", file.name);
-    await dio.download(url, path);
-    await Pasteboard.writeFiles([path]);
+
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      final directory = await getApplicationCacheDirectory();
+      String path = join(directory.path, "tempfile");
+      if (Platform.isWindows) {
+        final subfix = file.name.split(".").lastOrNull;
+        if (subfix != null) {
+          path = join(directory.path, "tempimage.$subfix");
+        }
+      }
+
+      await dio.download(url, path);
+      await Pasteboard.writeFiles([path]);
+    } else {
+      final path = await FilePicker.platform.saveFile();
+      if (path != null) {
+        await dio.download(url, path);
+      }
+    }
   }
 
   void onPressShareText(BuildContext context, protobuf.Text text) {
     final futurebuilder = FutureBuilder(
       future: findOnlineUsers(),
       builder: (context, snapshot) {
-        final users = snapshot.requireData.users;
-        users.insert(0, "select user");
-        final menus = users.map((user) => DropdownMenuItem(
-          child: Text(user),
-          value: user,
-        )).toList();
-         return DropdownButton(
-             value: "select user",
-             items: menus,
-             onChanged: (String? value) {
-               if (value != null) {
-                 touid = value;
-               }
-             }
-        );
+        if (snapshot.hasData) {
+          final users = snapshot.requireData.users;
+          users.insert(0, "select user");
+          users.removeWhere((element) => element == fromuid);
+          final menus = users.map((user) =>
+              DropdownMenuItem(
+                value: user,
+                child: Text(user),
+              )).toList();
+          return DropdownButton(
+              value: "select user",
+              items: menus,
+              onChanged: (String? value) {
+                if (value != null) {
+                  touid = value;
+                }
+              }
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
 
@@ -332,7 +405,7 @@ class DataPageState extends State<DataPage> {
             onPressed: () {
               final state = context.read<GlobalState>();
               if (touid == "select user") {
-                final snackbar = SnackBar(content: const Text("no user select"));
+                const snackbar = SnackBar(content: Text("no user select"));
                 ScaffoldMessenger.of(context).showSnackBar(snackbar);
               } else {
                 final data = protobuf.TransferData.create();
@@ -356,21 +429,29 @@ class DataPageState extends State<DataPage> {
     final futurebuilder = FutureBuilder(
       future: findOnlineUsers(),
       builder: (context, snapshot) {
-        final users = snapshot.requireData.users;
-        users.insert(0, "select user");
-        final menus = users.map((user) => DropdownMenuItem(
-          child: Text(user),
-          value: user,
-        )).toList();
-        return DropdownButton(
-            value: "select user",
-            items: menus,
-            onChanged: (String? value) {
-              if (value != null) {
-                touid = value;
+        if (snapshot.hasData) {
+          final users = snapshot.requireData.users;
+          users.insert(0, "select user");
+          users.removeWhere((element) => element == fromuid);
+          final menus = users.map((user) =>
+              DropdownMenuItem(
+                value: user,
+                child: Text(user),
+              )).toList();
+          return DropdownButton(
+              value: "select user",
+              items: menus,
+              onChanged: (String? value) {
+                if (value != null) {
+                  touid = value;
+                }
               }
-            }
-        );
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
 
@@ -392,7 +473,7 @@ class DataPageState extends State<DataPage> {
               onPressed: () {
                 final state = context.read<GlobalState>();
                 if (touid == "select user") {
-                  final snackbar = SnackBar(content: const Text("no user select"));
+                  const snackbar = SnackBar(content: Text("no user select"));
                   ScaffoldMessenger.of(context).showSnackBar(snackbar);
                 } else {
                   final data = protobuf.TransferData.create();
@@ -416,21 +497,29 @@ class DataPageState extends State<DataPage> {
     final futurebuilder = FutureBuilder(
       future: findOnlineUsers(),
       builder: (context, snapshot) {
-        final users = snapshot.requireData.users;
-        users.insert(0, "select user");
-        final menus = users.map((user) => DropdownMenuItem(
-          child: Text(user),
-          value: user,
-        )).toList();
-        return DropdownButton(
-            value: "select user",
-            items: menus,
-            onChanged: (String? value) {
-              if (value != null) {
-                touid = value;
+        if (snapshot.hasData) {
+          final users = snapshot.requireData.users;
+          users.insert(0, "select user");
+          users.removeWhere((element) => element == fromuid);
+          final menus = users.map((user) =>
+              DropdownMenuItem(
+                value: user,
+                child: Text(user),
+              )).toList();
+          return DropdownButton(
+              value: "select user",
+              items: menus,
+              onChanged: (String? value) {
+                if (value != null) {
+                  touid = value;
+                }
               }
-            }
-        );
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
 
@@ -452,7 +541,7 @@ class DataPageState extends State<DataPage> {
               onPressed: () {
                 final state = context.read<GlobalState>();
                 if (touid == "select user") {
-                  final snackbar = SnackBar(content: const Text("no user select"));
+                  const snackbar = SnackBar(content: Text("no user select"));
                   ScaffoldMessenger.of(context).showSnackBar(snackbar);
                 } else {
                   final data = protobuf.TransferData.create();
@@ -473,20 +562,20 @@ class DataPageState extends State<DataPage> {
   }
 
   Future<void> onPressDelete(String serverUrl, String type, int id) async {
-    String? url = null;
+    String? url;
     if (type == "text") {
       url = join(serverUrl, "api/text", id.toString());
-      setState(() {
+      setStateTexts(() {
         texts.removeWhere((element) => element.id == id);
       });
     } else if (type == "image") {
       url = join(serverUrl, "api/image", id.toString());
-      setState(() {
+      setStateImages(() {
         images.removeWhere((element) => element.id == id);
       });
     } else if (type == "file") {
       url = join(serverUrl, "api/file", id.toString());
-      setState(() {
+      setStateFiles(() {
         files.removeWhere((element) => element.id == id);
       });
     }
@@ -495,8 +584,125 @@ class DataPageState extends State<DataPage> {
   }
 
   Future<protobuf.OnlineUsers> findOnlineUsers() async {
-    final response = await dio.get(join(serverUrl, "api/clipboard/user"));
+    final response = await dio.get(join(serverUrl, "api/clipboard/user"), options: options);
     final data = protobuf.OnlineUsers.fromBuffer(response.data);
     return data;
+  }
+
+  void onPressAdd(BuildContext context) {
+    final controller = DefaultTabController.of(context);
+    final index = controller.index;
+
+    if (index == 0) {
+      addText(context);
+    } else if (index == 1) {
+      addImage(context);
+    } else {
+      addFile(context);
+    }
+  }
+
+  void addText(BuildContext context) {
+    final textfield = TextField(
+      controller: controller,
+    );
+
+    final sizedbox = FractionallySizedBox(
+      widthFactor: 0.8,
+      child: textfield,
+    );
+
+    final cancelButton = OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.blueAccent
+      ),
+
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+
+      child: const Text("cancel"),
+    );
+
+    final sendButton = OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.blueAccent
+      ),
+
+      onPressed: () async {
+        if (controller.text.isEmpty) {
+          const snackbar = SnackBar(content: Text("text cannot be empty"));
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        } else {
+
+          final response = await dio.post(join(serverUrl, "api/clipboard/text"), data: {
+            "text": controller.text
+          }, options: options);
+
+          final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
+          if (transferQueryResponse.type == TransferData_DataType.ERROR) {
+            final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
+            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          } else {
+            setStateTexts(() {
+              texts.insert(0, transferQueryResponse.text);
+            });
+          }
+
+          controller.text = "";
+          Navigator.of(context).pop();
+        }
+      },
+
+      child: const Text("send", style: TextStyle(color: Colors.white),),
+    );
+
+
+    showDialog(context: context, builder: (context) => AlertDialog(
+      content: sizedbox,
+      actions: [
+        cancelButton,
+        sendButton
+      ],
+    ));
+  }
+
+  Future<void> addImage(BuildContext context) async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final path = result?.files.single.path;
+    if (path != null) {
+      final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
+      final url = join(serverUrl, "api/clipboard/image");
+      final response = await dio.post(url, data: formdata, options: options);
+      final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
+      if (transferQueryResponse.type == TransferData_DataType.ERROR) {
+        final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      } else {
+        print("get data: ${transferQueryResponse.image}");
+        setStateImages(() {
+          images.insert(0, transferQueryResponse.image);
+        });
+      }
+    }
+  }
+
+  Future<void> addFile(BuildContext context) async {
+    final result = await FilePicker.platform.pickFiles();
+    final path = result?.files.single.path;
+    if (path != null) {
+      final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
+      final url = join(serverUrl, "api/clipboard/file");
+      final response = await dio.post(url, data: formdata, options: options);
+      final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
+      if (transferQueryResponse.type == TransferData_DataType.ERROR) {
+        final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      } else {
+        setStateFiles(() {
+          files.insert(0, transferQueryResponse.file);
+        });
+      }
+    }
   }
 }

@@ -291,6 +291,7 @@ enum TransferQueryResponse_Data {
   text, 
   image, 
   file, 
+  error, 
   notSet
 }
 
@@ -304,14 +305,16 @@ class TransferQueryResponse extends $pb.GeneratedMessage {
     2 : TransferQueryResponse_Data.text,
     3 : TransferQueryResponse_Data.image,
     4 : TransferQueryResponse_Data.file,
+    5 : TransferQueryResponse_Data.error,
     0 : TransferQueryResponse_Data.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'TransferQueryResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'protobuf'), createEmptyInstance: create)
-    ..oo(0, [2, 3, 4])
+    ..oo(0, [2, 3, 4, 5])
     ..e<TransferQueryResponse_DataType>(1, _omitFieldNames ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: TransferQueryResponse_DataType.TEXT, valueOf: TransferQueryResponse_DataType.valueOf, enumValues: TransferQueryResponse_DataType.values)
     ..aOM<Text>(2, _omitFieldNames ? '' : 'text', subBuilder: Text.create)
     ..aOM<Image>(3, _omitFieldNames ? '' : 'image', subBuilder: Image.create)
     ..aOM<File>(4, _omitFieldNames ? '' : 'file', subBuilder: File.create)
+    ..aOS(5, _omitFieldNames ? '' : 'error')
     ..hasRequiredFields = false
   ;
 
@@ -380,6 +383,15 @@ class TransferQueryResponse extends $pb.GeneratedMessage {
   void clearFile() => clearField(4);
   @$pb.TagNumber(4)
   File ensureFile() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $core.String get error => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set error($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasError() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearError() => clearField(5);
 }
 
 class Text extends $pb.GeneratedMessage {

@@ -114,3 +114,13 @@ ping - pong
 第一版是将数据存储在服务端
 ** 功能
 KDE Connect 发送文件到对端
+
+* FIXME
+- [X] on press copy image/file case windows + subfix
+- [X] online user is duplicate
+- [X] textfield too long
+- [ ] empty file
+* Feature
+- [X] floating action button to add data
+- [ ] schedule : delete tempfile every 10 min
+- [ ] Stream for refresh page, when update data, use websocke to send a message

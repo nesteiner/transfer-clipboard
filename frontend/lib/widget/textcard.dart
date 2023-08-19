@@ -22,7 +22,12 @@ Widget buildTextCard(BuildContext context, protobuf.Text text, {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(text.text),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(text.text),
+            ],
+          ),
 
           Row(
             children: [

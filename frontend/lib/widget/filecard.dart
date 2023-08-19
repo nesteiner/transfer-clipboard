@@ -7,11 +7,18 @@ Widget buildFileCard(BuildContext context, protobuf.File file, {
   void Function()? onPressDelete
 }) {
   final icon = Icon(Icons.file_copy_outlined, size: 20,);
-  final description = Column(
+  final description = Row(
     children: [
       icon,
-      Text(file.name),
-      Text(file.size)
+      SizedBox(width: 10,),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(file.name),
+          Text(file.size)
+        ],
+      )
+
     ],
   );
 

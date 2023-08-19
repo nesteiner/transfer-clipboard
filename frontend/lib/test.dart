@@ -16,39 +16,36 @@ class App extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  HomePageState createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  List<int> nums = [1, 2, 3];
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       body: Center(
-        child: SizedBox(
-          width: double.infinity,
-          height: 200,
-          child: buildBody(context),
-        )
-      )
+        child: buildBody(context)
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            nums.insert(0, 10);
+          });
+        },
+
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
   Widget buildBody(BuildContext context) {
-    return OutlinedButton(
-      onPressed: () async {
-        final dio = Dio();
-        final options = Options(
-          headers: {
-            "Accept": "application/x-protobuf"
-          },
-
-          responseType: ResponseType.bytes
-        );
-
-        final response = await dio.get("http://localhost:8082/api/clipboard/text", options: options);
-        final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
-        print(data);
-      },
-
-      child: const Text("test"),
+    return Column(
+      children: nums.map((e) => Text(e.toString())).toList(),
     );
   }
 }

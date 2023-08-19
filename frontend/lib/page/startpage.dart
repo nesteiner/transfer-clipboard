@@ -19,18 +19,24 @@ class StartPage extends StatelessWidget {
   Widget buildBody(BuildContext context) {
     final state = context.read<GlobalState>();
     final serverUrl = state.websocketUrl;
+    final textfield = TextField(
+      controller: controller,
+      onChanged: (String value) {
+        state.setFromuid(value);
+      },
+    );
+
+    final sizedbox = FractionallySizedBox(
+      widthFactor: 0.5,
+      child: textfield,
+    );
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextField(
-            controller: controller,
-            onChanged: (String value) {
-              state.setFromuid(value);
-            },
-          ),
-
+          sizedbox,
           OutlinedButton(
             onPressed: () {
               try {

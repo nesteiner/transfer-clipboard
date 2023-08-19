@@ -11,10 +11,12 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.util.*
 
 @Service
@@ -24,7 +26,12 @@ class ImageService {
     lateinit var fileStorageConfigure: FileStorageConfigure
 
     fun insertOne(file: MultipartFile): Image {
-        val filename = file.originalFilename ?: "${UUID.randomUUID().toString().slice(1..10)}_untitled"
+        val filename = if (file.originalFilename != null) {
+            "${UUID.randomUUID().toString().slice(1..10)}_${file.originalFilename}"
+        } else {
+            "${UUID.randomUUID().toString().slice(1..10)}_untitled"
+        }
+
         val path = "${fileStorageConfigure.url}/${UUID.randomUUID().toString().slice(1..10)}_${filename}"
         val size = file.size.let {
             if (it > oneKB && it < oneMB) {
@@ -36,6 +43,8 @@ class ImageService {
             }
         }
 
+        file.transferTo(File(path))
+
         val id = Images.insert {
             it[name] = filename
             it[this.path] = path
@@ -44,7 +53,7 @@ class ImageService {
 
         return image {
             this.id = id.value
-            this.name = name
+            this.name = filename
             this.path = path
             this.size = size
         }

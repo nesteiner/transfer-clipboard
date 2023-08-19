@@ -49,6 +49,7 @@ message TransferQueryResponse {
         TEXT = 0;
         IMAGE = 1;
         FILE = 2;
+        ERROR = 3;
     }
 
     DataType type = 1;
@@ -56,6 +57,7 @@ message TransferQueryResponse {
         Text text = 2;
         Image image = 3;
         File file = 4;
+        string error = 5;
     }
 }
 

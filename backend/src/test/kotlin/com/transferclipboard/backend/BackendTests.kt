@@ -7,6 +7,7 @@ import com.transferclipboard.backend.table.Texts
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class BackendTests {
     @Test
@@ -14,7 +15,20 @@ class BackendTests {
         Database.connect("jdbc:postgresql://localhost/transfer-clipboard", user = "steiner", password = "779151714", driver = "org.postgresql.Driver")
         transaction {
             addLogger(StdOutSqlLogger)
+            SchemaUtils.drop(Files, Images, Files)
             SchemaUtils.create(Files, Images, Texts)
+            Files.selectAll().map {
+                it[Files.path]
+            }.forEach {
+                File(it).delete()
+            }
+
+            Images.selectAll().map {
+                it[Images.path]
+            }.forEach {
+                File(it).delete()
+            }
+
             Texts.deleteAll()
             Files.deleteAll()
             Images.deleteAll()
@@ -23,23 +37,8 @@ class BackendTests {
                 it[id] = 1
                 it[text] = "hello world"
             }
-
-            Files.insert {
-                it[id] = 1
-                it[name] = "hello"
-                it[path] = "/home/steiner/disk/windows-data/Download/dotnet-install.sh"
-                it[size] = "56.9 KB"
-            }
-
-            Images.insert {
-                it[id] = 1
-                it[name] = "hello"
-                it[path] = "/home/steiner/disk/windows-data/Download/cake/[MFStar] VOL.013 娇艳小萝莉徐cake性感私房第二套高清写真美图录/2.jpg"
-                it[size] = "221.3 KB"
-            }
         }
 
 
     }
-
 }
