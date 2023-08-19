@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
               try {
                 final directory = await getTemporaryDirectory();
                 final path = join(directory.path, "tempfile");
-                final url = "http://192.168.1.6:8082/api/download/image/hello";
+                const url = "http://192.168.1.6:8082/api/download/image/hello";
                 await dio.download(url, path);
                 Pasteboard.writeFiles([path]);
 

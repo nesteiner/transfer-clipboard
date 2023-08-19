@@ -4,7 +4,7 @@ import 'package:frontend/state.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-IOWebSocketChannel? socket = null;
+IOWebSocketChannel? socket;
 
 void main() {
   runApp(App());
