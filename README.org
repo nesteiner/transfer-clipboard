@@ -119,8 +119,11 @@ KDE Connect 发送文件到对端
 - [X] on press copy image/file case windows + subfix
 - [X] online user is duplicate
 - [X] textfield too long
-- [ ] empty file
+- [X] empty file
+- [X] insert(0, element) not work
 * Feature
 - [X] floating action button to add data
 - [ ] schedule : delete tempfile every 10 min
 - [ ] Stream for refresh page, when update data, use websocke to send a message
+- [ ] setting server url by manual
+- [ ] handle connection lose exception

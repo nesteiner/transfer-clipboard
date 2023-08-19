@@ -161,13 +161,43 @@ class DataPageState extends State<DataPage> {
           ],
         ),
 
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            onPressAdd(context);
-          },
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              heroTag: "refresh",
+              onPressed: () async {
+                final index = await onPressRefresh(context);
+                if (index == 0) {
+                  setStateTexts(() {
 
-          child: const Icon(Icons.add),
-        ),
+                  });
+                } else if (index == 1) {
+                  setStateImages(() {
+
+                  });
+                } else {
+                  setStateFiles(() {
+
+                  });
+                }
+              },
+
+              child: const Icon(Icons.refresh),
+            ),
+
+            SizedBox(height: 10,),
+
+            FloatingActionButton(
+              heroTag: "add",
+              onPressed: () {
+                onPressAdd(context);
+              },
+
+              child: const Icon(Icons.add),
+            )
+          ],
+        )
       );
     },);
 
@@ -600,6 +630,30 @@ class DataPageState extends State<DataPage> {
     } else {
       addFile(context);
     }
+  }
+
+  Future<int> onPressRefresh(BuildContext context) async {
+    final controller = DefaultTabController.of(context);
+    final index = controller.index;
+
+    if (index == 0) {
+      final url = join(serverUrl, "api/clipboard/text");
+      final response = await dio.get(url, options: options);
+      final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
+      texts = data.texts.list.reversed.toList();
+    } else if (index == 1) {
+      final url = join(serverUrl, "api/clipboard/image");
+      final response = await dio.get(url, options: options);
+      final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
+      images = data.images.list.reversed.toList();
+    } else {
+      final url = join(serverUrl, "api/clipboard/file");
+      final response = await dio.get(url, options: options);
+      final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
+      files = data.files.list.reversed.toList();
+    }
+
+    return index;
   }
 
   void addText(BuildContext context) {
