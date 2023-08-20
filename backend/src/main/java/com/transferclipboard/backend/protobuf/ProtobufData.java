@@ -99,21 +99,21 @@ public final class ProtobufData {
     com.transferclipboard.backend.protobuf.ProtobufData.FileOrBuilder getFileOrBuilder();
 
     /**
-     * <code>string message = 7;</code>
-     * @return Whether the message field is set.
+     * <code>string notification = 7;</code>
+     * @return Whether the notification field is set.
      */
-    boolean hasMessage();
+    boolean hasNotification();
     /**
-     * <code>string message = 7;</code>
-     * @return The message.
+     * <code>string notification = 7;</code>
+     * @return The notification.
      */
-    java.lang.String getMessage();
+    java.lang.String getNotification();
     /**
-     * <code>string message = 7;</code>
-     * @return The bytes for message.
+     * <code>string notification = 7;</code>
+     * @return The bytes for notification.
      */
     com.google.protobuf.ByteString
-        getMessageBytes();
+        getNotificationBytes();
 
     /**
      * <code>string error = 8;</code>
@@ -182,9 +182,9 @@ public final class ProtobufData {
        */
       ERROR(0),
       /**
-       * <code>MESSAGE = 1;</code>
+       * <code>NOTIFICATION = 1;</code>
        */
-      MESSAGE(1),
+      NOTIFICATION(1),
       /**
        * <code>TEXT = 2;</code>
        */
@@ -205,9 +205,9 @@ public final class ProtobufData {
        */
       public static final int ERROR_VALUE = 0;
       /**
-       * <code>MESSAGE = 1;</code>
+       * <code>NOTIFICATION = 1;</code>
        */
-      public static final int MESSAGE_VALUE = 1;
+      public static final int NOTIFICATION_VALUE = 1;
       /**
        * <code>TEXT = 2;</code>
        */
@@ -247,7 +247,7 @@ public final class ProtobufData {
       public static DataType forNumber(int value) {
         switch (value) {
           case 0: return ERROR;
-          case 1: return MESSAGE;
+          case 1: return NOTIFICATION;
           case 2: return TEXT;
           case 3: return IMAGE;
           case 4: return FILE;
@@ -316,7 +316,7 @@ public final class ProtobufData {
       TEXT(4),
       IMAGE(5),
       FILE(6),
-      MESSAGE(7),
+      NOTIFICATION(7),
       ERROR(8),
       DATA_NOT_SET(0);
       private final int value;
@@ -338,7 +338,7 @@ public final class ProtobufData {
           case 4: return TEXT;
           case 5: return IMAGE;
           case 6: return FILE;
-          case 7: return MESSAGE;
+          case 7: return NOTIFICATION;
           case 8: return ERROR;
           case 0: return DATA_NOT_SET;
           default: return null;
@@ -544,19 +544,19 @@ public final class ProtobufData {
       return com.transferclipboard.backend.protobuf.ProtobufData.File.getDefaultInstance();
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 7;
+    public static final int NOTIFICATION_FIELD_NUMBER = 7;
     /**
-     * <code>string message = 7;</code>
-     * @return Whether the message field is set.
+     * <code>string notification = 7;</code>
+     * @return Whether the notification field is set.
      */
-    public boolean hasMessage() {
+    public boolean hasNotification() {
       return dataCase_ == 7;
     }
     /**
-     * <code>string message = 7;</code>
-     * @return The message.
+     * <code>string notification = 7;</code>
+     * @return The notification.
      */
-    public java.lang.String getMessage() {
+    public java.lang.String getNotification() {
       java.lang.Object ref = "";
       if (dataCase_ == 7) {
         ref = data_;
@@ -574,11 +574,11 @@ public final class ProtobufData {
       }
     }
     /**
-     * <code>string message = 7;</code>
-     * @return The bytes for message.
+     * <code>string notification = 7;</code>
+     * @return The bytes for notification.
      */
     public com.google.protobuf.ByteString
-        getMessageBytes() {
+        getNotificationBytes() {
       java.lang.Object ref = "";
       if (dataCase_ == 7) {
         ref = data_;
@@ -758,8 +758,8 @@ public final class ProtobufData {
               .equals(other.getFile())) return false;
           break;
         case 7:
-          if (!getMessage()
-              .equals(other.getMessage())) return false;
+          if (!getNotification()
+              .equals(other.getNotification())) return false;
           break;
         case 8:
           if (!getError()
@@ -799,8 +799,8 @@ public final class ProtobufData {
           hash = (53 * hash) + getFile().hashCode();
           break;
         case 7:
-          hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-          hash = (53 * hash) + getMessage().hashCode();
+          hash = (37 * hash) + NOTIFICATION_FIELD_NUMBER;
+          hash = (53 * hash) + getNotification().hashCode();
           break;
         case 8:
           hash = (37 * hash) + ERROR_FIELD_NUMBER;
@@ -1086,7 +1086,7 @@ public final class ProtobufData {
             mergeFile(other.getFile());
             break;
           }
-          case MESSAGE: {
+          case NOTIFICATION: {
             dataCase_ = 7;
             data_ = other.data_;
             onChanged();
@@ -1832,19 +1832,19 @@ public final class ProtobufData {
       }
 
       /**
-       * <code>string message = 7;</code>
-       * @return Whether the message field is set.
+       * <code>string notification = 7;</code>
+       * @return Whether the notification field is set.
        */
       @java.lang.Override
-      public boolean hasMessage() {
+      public boolean hasNotification() {
         return dataCase_ == 7;
       }
       /**
-       * <code>string message = 7;</code>
-       * @return The message.
+       * <code>string notification = 7;</code>
+       * @return The notification.
        */
       @java.lang.Override
-      public java.lang.String getMessage() {
+      public java.lang.String getNotification() {
         java.lang.Object ref = "";
         if (dataCase_ == 7) {
           ref = data_;
@@ -1862,12 +1862,12 @@ public final class ProtobufData {
         }
       }
       /**
-       * <code>string message = 7;</code>
-       * @return The bytes for message.
+       * <code>string notification = 7;</code>
+       * @return The bytes for notification.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getMessageBytes() {
+          getNotificationBytes() {
         java.lang.Object ref = "";
         if (dataCase_ == 7) {
           ref = data_;
@@ -1885,11 +1885,11 @@ public final class ProtobufData {
         }
       }
       /**
-       * <code>string message = 7;</code>
-       * @param value The message to set.
+       * <code>string notification = 7;</code>
+       * @param value The notification to set.
        * @return This builder for chaining.
        */
-      public Builder setMessage(
+      public Builder setNotification(
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         dataCase_ = 7;
@@ -1898,10 +1898,10 @@ public final class ProtobufData {
         return this;
       }
       /**
-       * <code>string message = 7;</code>
+       * <code>string notification = 7;</code>
        * @return This builder for chaining.
        */
-      public Builder clearMessage() {
+      public Builder clearNotification() {
         if (dataCase_ == 7) {
           dataCase_ = 0;
           data_ = null;
@@ -1910,11 +1910,11 @@ public final class ProtobufData {
         return this;
       }
       /**
-       * <code>string message = 7;</code>
-       * @param value The bytes for message to set.
+       * <code>string notification = 7;</code>
+       * @param value The bytes for notification to set.
        * @return This builder for chaining.
        */
-      public Builder setMessageBytes(
+      public Builder setNotificationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
@@ -10510,37 +10510,37 @@ public final class ProtobufData {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\006.proto\022\010protobuf\"\256\002\n\014TransferData\022\017\n\007f" +
+      "\n\006.proto\022\010protobuf\"\270\002\n\014TransferData\022\017\n\007f" +
       "romuid\030\001 \001(\t\022\r\n\005touid\030\002 \001(\t\022-\n\004type\030\003 \001(" +
       "\0162\037.protobuf.TransferData.DataType\022\036\n\004te" +
       "xt\030\004 \001(\0132\016.protobuf.TextH\000\022 \n\005image\030\005 \001(" +
       "\0132\017.protobuf.ImageH\000\022\036\n\004file\030\006 \001(\0132\016.pro" +
-      "tobuf.FileH\000\022\021\n\007message\030\007 \001(\tH\000\022\017\n\005error" +
-      "\030\010 \001(\tH\000\"A\n\010DataType\022\t\n\005ERROR\020\000\022\013\n\007MESSA" +
-      "GE\020\001\022\010\n\004TEXT\020\002\022\t\n\005IMAGE\020\003\022\010\n\004FILE\020\004B\006\n\004d" +
-      "ata\"\034\n\013OnlineUsers\022\r\n\005users\030\001 \003(\t\"\210\002\n\030Tr" +
-      "ansferQueryAllResponse\0229\n\004type\030\001 \001(\0162+.p" +
-      "rotobuf.TransferQueryAllResponse.DataTyp" +
-      "e\022#\n\005texts\030\002 \001(\0132\022.protobuf.TextListH\000\022%" +
-      "\n\006images\030\003 \001(\0132\023.protobuf.ImageListH\000\022#\n" +
-      "\005files\030\004 \001(\0132\022.protobuf.FileListH\000\"8\n\010Da" +
-      "taType\022\r\n\tTEXT_LIST\020\000\022\016\n\nIMAGE_LIST\020\001\022\r\n" +
-      "\tFILE_LIST\020\002B\006\n\004data\"\200\002\n\025TransferQueryRe" +
-      "sponse\0226\n\004type\030\001 \001(\0162(.protobuf.Transfer" +
-      "QueryResponse.DataType\022\036\n\004text\030\002 \001(\0132\016.p" +
-      "rotobuf.TextH\000\022 \n\005image\030\003 \001(\0132\017.protobuf" +
-      ".ImageH\000\022\036\n\004file\030\004 \001(\0132\016.protobuf.FileH\000" +
-      "\022\017\n\005error\030\005 \001(\tH\000\"4\n\010DataType\022\010\n\004TEXT\020\000\022" +
-      "\t\n\005IMAGE\020\001\022\010\n\004FILE\020\002\022\t\n\005ERROR\020\003B\006\n\004data\"" +
-      " \n\004Text\022\n\n\002id\030\001 \001(\r\022\014\n\004text\030\002 \001(\t\"=\n\005Ima" +
-      "ge\022\n\n\002id\030\001 \001(\r\022\014\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001" +
-      "(\t\022\014\n\004size\030\004 \001(\t\"<\n\004File\022\n\n\002id\030\001 \001(\r\022\014\n\004" +
-      "name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\014\n\004size\030\004 \001(\t\"(" +
-      "\n\010TextList\022\034\n\004list\030\001 \003(\0132\016.protobuf.Text" +
-      "\"*\n\tImageList\022\035\n\004list\030\002 \003(\0132\017.protobuf.I" +
-      "mage\"(\n\010FileList\022\034\n\004list\030\003 \003(\0132\016.protobu" +
-      "f.FileB6\n&com.transferclipboard.backend." +
-      "protobufB\014ProtobufDatab\006proto3"
+      "tobuf.FileH\000\022\026\n\014notification\030\007 \001(\tH\000\022\017\n\005" +
+      "error\030\010 \001(\tH\000\"F\n\010DataType\022\t\n\005ERROR\020\000\022\020\n\014" +
+      "NOTIFICATION\020\001\022\010\n\004TEXT\020\002\022\t\n\005IMAGE\020\003\022\010\n\004F" +
+      "ILE\020\004B\006\n\004data\"\034\n\013OnlineUsers\022\r\n\005users\030\001 " +
+      "\003(\t\"\210\002\n\030TransferQueryAllResponse\0229\n\004type" +
+      "\030\001 \001(\0162+.protobuf.TransferQueryAllRespon" +
+      "se.DataType\022#\n\005texts\030\002 \001(\0132\022.protobuf.Te" +
+      "xtListH\000\022%\n\006images\030\003 \001(\0132\023.protobuf.Imag" +
+      "eListH\000\022#\n\005files\030\004 \001(\0132\022.protobuf.FileLi" +
+      "stH\000\"8\n\010DataType\022\r\n\tTEXT_LIST\020\000\022\016\n\nIMAGE" +
+      "_LIST\020\001\022\r\n\tFILE_LIST\020\002B\006\n\004data\"\200\002\n\025Trans" +
+      "ferQueryResponse\0226\n\004type\030\001 \001(\0162(.protobu" +
+      "f.TransferQueryResponse.DataType\022\036\n\004text" +
+      "\030\002 \001(\0132\016.protobuf.TextH\000\022 \n\005image\030\003 \001(\0132" +
+      "\017.protobuf.ImageH\000\022\036\n\004file\030\004 \001(\0132\016.proto" +
+      "buf.FileH\000\022\017\n\005error\030\005 \001(\tH\000\"4\n\010DataType\022" +
+      "\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FILE\020\002\022\t\n\005ERROR\020" +
+      "\003B\006\n\004data\" \n\004Text\022\n\n\002id\030\001 \001(\r\022\014\n\004text\030\002 " +
+      "\001(\t\"=\n\005Image\022\n\n\002id\030\001 \001(\r\022\014\n\004name\030\002 \001(\t\022\014" +
+      "\n\004path\030\003 \001(\t\022\014\n\004size\030\004 \001(\t\"<\n\004File\022\n\n\002id" +
+      "\030\001 \001(\r\022\014\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\014\n\004si" +
+      "ze\030\004 \001(\t\"(\n\010TextList\022\034\n\004list\030\001 \003(\0132\016.pro" +
+      "tobuf.Text\"*\n\tImageList\022\035\n\004list\030\002 \003(\0132\017." +
+      "protobuf.Image\"(\n\010FileList\022\034\n\004list\030\003 \003(\013" +
+      "2\016.protobuf.FileB6\n&com.transferclipboar" +
+      "d.backend.protobufB\014ProtobufDatab\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10551,7 +10551,7 @@ public final class ProtobufData {
     internal_static_protobuf_TransferData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_protobuf_TransferData_descriptor,
-        new java.lang.String[] { "Fromuid", "Touid", "Type", "Text", "Image", "File", "Message", "Error", "Data", });
+        new java.lang.String[] { "Fromuid", "Touid", "Type", "Text", "Image", "File", "Notification", "Error", "Data", });
     internal_static_protobuf_OnlineUsers_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_protobuf_OnlineUsers_fieldAccessorTable = new

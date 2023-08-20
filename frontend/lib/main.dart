@@ -15,7 +15,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => GlobalState("http://192.168.1.6:8082", "ws://192.168.1.6:8082"),
+      create: (_) => GlobalState(),
       child: MaterialApp(
         title: "transfer-clipboard",
         home: StartPage(),

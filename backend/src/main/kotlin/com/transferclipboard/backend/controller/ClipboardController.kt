@@ -41,6 +41,11 @@ class ClipboardController {
     @PostMapping("/text")
     fun insertText(@RequestBody @Valid request: InsertTextRequest, bindingResult: BindingResult): TransferQueryResponse {
         val result = textService.insertOne(request)
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
+
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.TEXT
             text = result
@@ -73,12 +78,19 @@ class ClipboardController {
     @DeleteMapping("/text/{id}")
     fun deleteText(@PathVariable id: Int) {
         textService.deleteOne(id)
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
     }
 
     @PostMapping("/image")
     fun insertImage(@RequestParam("file") file: MultipartFile): TransferQueryResponse {
         val result = imageService.insertOne(file)
-        logger.info("the result is ${result}")
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
 
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.IMAGE
@@ -113,11 +125,20 @@ class ClipboardController {
     @DeleteMapping("/image/{name}")
     fun deleteImage(@PathVariable("name") name: String) {
         imageService.deleteOne(name)
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
     }
 
     @PostMapping("/file")
     fun insertFile(@RequestParam("file") file: MultipartFile): TransferQueryResponse {
         val result = fileService.insertOne(file)
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
+
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.FILE
             this.file = result
@@ -151,6 +172,10 @@ class ClipboardController {
     @DeleteMapping("/file/{name}")
     fun deleteFile(@PathVariable("name") name: String) {
         fileService.deleteOne(name)
+
+        TransferEndpoint.socketmap.values.forEach {
+            it.notifyData()
+        }
     }
 
     @GetMapping("/user")

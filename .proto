@@ -7,7 +7,7 @@ package protobuf;
 message TransferData {
     enum DataType {
         ERROR = 0;
-        MESSAGE = 1;
+        NOTIFICATION = 1;
         TEXT = 2;
         IMAGE = 3;
         FILE = 4;
@@ -20,7 +20,7 @@ message TransferData {
         Text text = 4;
         Image image = 5;
         File file = 6;
-        string message = 7;
+        string notification = 7;
         string error = 8;
     }
 }

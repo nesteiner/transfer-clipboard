@@ -23,7 +23,7 @@ const TransferData$json = {
     {'1': 'text', '3': 4, '4': 1, '5': 11, '6': '.protobuf.Text', '9': 0, '10': 'text'},
     {'1': 'image', '3': 5, '4': 1, '5': 11, '6': '.protobuf.Image', '9': 0, '10': 'image'},
     {'1': 'file', '3': 6, '4': 1, '5': 11, '6': '.protobuf.File', '9': 0, '10': 'file'},
-    {'1': 'message', '3': 7, '4': 1, '5': 9, '9': 0, '10': 'message'},
+    {'1': 'notification', '3': 7, '4': 1, '5': 9, '9': 0, '10': 'notification'},
     {'1': 'error', '3': 8, '4': 1, '5': 9, '9': 0, '10': 'error'},
   ],
   '4': [TransferData_DataType$json],
@@ -37,7 +37,7 @@ const TransferData_DataType$json = {
   '1': 'DataType',
   '2': [
     {'1': 'ERROR', '2': 0},
-    {'1': 'MESSAGE', '2': 1},
+    {'1': 'NOTIFICATION', '2': 1},
     {'1': 'TEXT', '2': 2},
     {'1': 'IMAGE', '2': 3},
     {'1': 'FILE', '2': 4},
@@ -50,9 +50,9 @@ final $typed_data.Uint8List transferDataDescriptor = $convert.base64Decode(
     'IFdG91aWQSMwoEdHlwZRgDIAEoDjIfLnByb3RvYnVmLlRyYW5zZmVyRGF0YS5EYXRhVHlwZVIE'
     'dHlwZRIkCgR0ZXh0GAQgASgLMg4ucHJvdG9idWYuVGV4dEgAUgR0ZXh0EicKBWltYWdlGAUgAS'
     'gLMg8ucHJvdG9idWYuSW1hZ2VIAFIFaW1hZ2USJAoEZmlsZRgGIAEoCzIOLnByb3RvYnVmLkZp'
-    'bGVIAFIEZmlsZRIaCgdtZXNzYWdlGAcgASgJSABSB21lc3NhZ2USFgoFZXJyb3IYCCABKAlIAF'
-    'IFZXJyb3IiQQoIRGF0YVR5cGUSCQoFRVJST1IQABILCgdNRVNTQUdFEAESCAoEVEVYVBACEgkK'
-    'BUlNQUdFEAMSCAoERklMRRAEQgYKBGRhdGE=');
+    'bGVIAFIEZmlsZRIkCgxub3RpZmljYXRpb24YByABKAlIAFIMbm90aWZpY2F0aW9uEhYKBWVycm'
+    '9yGAggASgJSABSBWVycm9yIkYKCERhdGFUeXBlEgkKBUVSUk9SEAASEAoMTk9USUZJQ0FUSU9O'
+    'EAESCAoEVEVYVBACEgkKBUlNQUdFEAMSCAoERklMRRAEQgYKBGRhdGE=');
 
 @$core.Deprecated('Use onlineUsersDescriptor instead')
 const OnlineUsers$json = {

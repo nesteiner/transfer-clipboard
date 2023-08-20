@@ -25,7 +25,12 @@ class FileService {
     lateinit var fileStorageConfigure: FileStorageConfigure
 
     fun insertOne(file: MultipartFile): ProtobufData.File {
-        val filename = file.originalFilename ?: "${UUID.randomUUID().toString().slice(1..10)}_untitled"
+        val filename = if (file.originalFilename != null) {
+            "${UUID.randomUUID().toString().slice(1..10)}_${file.originalFilename}"
+        } else {
+            "${UUID.randomUUID().toString().slice(1..10)}_untitled"
+        }
+
         val path = "${fileStorageConfigure.url}/${UUID.randomUUID().toString().slice(1..10)}_${filename}"
         val size = file.size.let {
             if (it > oneKB && it < oneMB) {
@@ -54,9 +59,19 @@ class FileService {
     }
 
     fun deleteOne(name: String) {
+        val path = Files.select(Files.name eq name).firstOrNull()?.let {
+            it[Files.path]
+        }
+
+        if (path != null) {
+            File(path).delete()
+        }
+
         Files.deleteWhere {
             this.name eq name
         }
+
+
     }
 
     fun findAll(): List<ProtobufData.File> {

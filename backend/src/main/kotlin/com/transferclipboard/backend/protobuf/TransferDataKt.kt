@@ -158,27 +158,27 @@ public object TransferDataKt {
     }
 
     /**
-     * `string message = 7;`
+     * `string notification = 7;`
      */
-    public var message: kotlin.String
-      @JvmName("getMessage")
-      get() = _builder.getMessage()
-      @JvmName("setMessage")
+    public var notification: kotlin.String
+      @JvmName("getNotification")
+      get() = _builder.getNotification()
+      @JvmName("setNotification")
       set(value) {
-        _builder.setMessage(value)
+        _builder.setNotification(value)
       }
     /**
-     * `string message = 7;`
+     * `string notification = 7;`
      */
-    public fun clearMessage() {
-      _builder.clearMessage()
+    public fun clearNotification() {
+      _builder.clearNotification()
     }
     /**
-     * `string message = 7;`
-     * @return Whether the message field is set.
+     * `string notification = 7;`
+     * @return Whether the notification field is set.
      */
-    public fun hasMessage(): kotlin.Boolean {
-      return _builder.hasMessage()
+    public fun hasNotification(): kotlin.Boolean {
+      return _builder.hasNotification()
     }
 
     /**

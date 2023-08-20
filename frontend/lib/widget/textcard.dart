@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/protobuf/.proto.pb.dart' as protobuf;
-import 'package:path/path.dart';
 
 Widget buildTextCard(BuildContext context, protobuf.Text text, {
   void Function()? onPressCopy,
   void Function()? onPressShare,
   void Function()? onPressDelete
 }) {
+  final textwidget = Wrap(
+    children: [
+      Text(text.text)
+    ],
+  );
   /**
    * card is width: 100% of parent, height: 100% of parent
    */
@@ -25,7 +29,7 @@ Widget buildTextCard(BuildContext context, protobuf.Text text, {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(text.text),
+              textwidget,
             ],
           ),
 

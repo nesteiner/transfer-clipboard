@@ -21,7 +21,7 @@ enum TransferData_Data {
   text, 
   image, 
   file, 
-  message, 
+  notification, 
   error, 
   notSet
 }
@@ -36,7 +36,7 @@ class TransferData extends $pb.GeneratedMessage {
     4 : TransferData_Data.text,
     5 : TransferData_Data.image,
     6 : TransferData_Data.file,
-    7 : TransferData_Data.message,
+    7 : TransferData_Data.notification,
     8 : TransferData_Data.error,
     0 : TransferData_Data.notSet
   };
@@ -48,7 +48,7 @@ class TransferData extends $pb.GeneratedMessage {
     ..aOM<Text>(4, _omitFieldNames ? '' : 'text', subBuilder: Text.create)
     ..aOM<Image>(5, _omitFieldNames ? '' : 'image', subBuilder: Image.create)
     ..aOM<File>(6, _omitFieldNames ? '' : 'file', subBuilder: File.create)
-    ..aOS(7, _omitFieldNames ? '' : 'message')
+    ..aOS(7, _omitFieldNames ? '' : 'notification')
     ..aOS(8, _omitFieldNames ? '' : 'error')
     ..hasRequiredFields = false
   ;
@@ -138,13 +138,13 @@ class TransferData extends $pb.GeneratedMessage {
   File ensureFile() => $_ensure(5);
 
   @$pb.TagNumber(7)
-  $core.String get message => $_getSZ(6);
+  $core.String get notification => $_getSZ(6);
   @$pb.TagNumber(7)
-  set message($core.String v) { $_setString(6, v); }
+  set notification($core.String v) { $_setString(6, v); }
   @$pb.TagNumber(7)
-  $core.bool hasMessage() => $_has(6);
+  $core.bool hasNotification() => $_has(6);
   @$pb.TagNumber(7)
-  void clearMessage() => clearField(7);
+  void clearNotification() => clearField(7);
 
   @$pb.TagNumber(8)
   $core.String get error => $_getSZ(7);

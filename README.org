@@ -121,9 +121,16 @@ KDE Connect 发送文件到对端
 - [X] textfield too long
 - [X] empty file
 - [X] insert(0, element) not work
+- [X] touid setState
+- [X] 退出时黑屏
+- [X] 设置初识 size
+- [X] filecard overflow
+- [ ] android saveFile not implement, snackbar to notify, set default save path
 * Feature
 - [X] floating action button to add data
 - [ ] schedule : delete tempfile every 10 min
-- [ ] Stream for refresh page, when update data, use websocke to send a message
-- [ ] setting server url by manual
-- [ ] handle connection lose exception
+- [X] Stream for refresh page, when update data, use websocke to send a message
+- [X] setting server url by manual
+- [X] handle connection lose exception
+- [X] handle error when connect
+- [ ] show dialog for uploading file

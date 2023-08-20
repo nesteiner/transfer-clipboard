@@ -60,6 +60,14 @@ class ImageService {
     }
 
     fun deleteOne(name: String) {
+        val path = Images.select(Images.name eq name).firstOrNull()?.let {
+            it[Images.path]
+        }
+
+        if (path != null) {
+            File(path).delete()
+        }
+
         Images.deleteWhere {
             this.name eq name
         }

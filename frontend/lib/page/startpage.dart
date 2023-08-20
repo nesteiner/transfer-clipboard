@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/page/datapage.dart';
 import 'package:frontend/state.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StartPage extends StatelessWidget {
-  final TextEditingController controller = TextEditingController();
-
+  final TextEditingController serverUrlController = TextEditingController();
+  final TextEditingController uidController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,17 +19,40 @@ class StartPage extends StatelessWidget {
 
   Widget buildBody(BuildContext context) {
     final state = context.read<GlobalState>();
-    final serverUrl = state.websocketUrl;
-    final textfield = TextField(
-      controller: controller,
+    final inputServerUrl = TextField(
+      controller: serverUrlController,
+      decoration: const InputDecoration(
+        labelText: "服务器地址",
+        hintText: "ip:port"
+      ),
+
       onChanged: (String value) {
-        state.setFromuid(value);
+        state.serverUrl = "http://${value}";
+        state.websocketUrl = "ws://${value}";
+      },
+    );
+
+    final inputUid = TextField(
+      controller: uidController,
+      decoration: const InputDecoration(
+        labelText: "登陆名",
+        hintText: "uid"
+      ),
+
+      onChanged: (String value) {
+        state.fromuid = value;
       },
     );
 
     final sizedbox = FractionallySizedBox(
-      widthFactor: 0.5,
-      child: textfield,
+      widthFactor: 0.8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          inputServerUrl,
+          inputUid
+        ],
+      ),
     );
 
     return Center(
@@ -40,7 +64,8 @@ class StartPage extends StatelessWidget {
           OutlinedButton(
             onPressed: () {
               try {
-                socket = IOWebSocketChannel.connect("${serverUrl}/api/transfer/${state.fromuid}");
+                final url = join(state.websocketUrl, "api/transfer", state.fromuid);
+                socket = IOWebSocketChannel.connect(url);
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => DataPage()));
               } on WebSocketChannelException catch (exception) {
                 showDialog(context: context, builder: (context) => AlertDialog(

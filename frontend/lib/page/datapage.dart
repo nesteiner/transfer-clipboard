@@ -13,6 +13,7 @@ import 'package:frontend/widget/textcard.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class DataPage extends StatefulWidget {
@@ -21,11 +22,13 @@ class DataPage extends StatefulWidget {
 }
 
 class DataPageState extends State<DataPage> {
+  static String DEFAULT_TO_UID = "Select User";
+
   late List<protobuf.Text> texts;
   late List<protobuf.Image> images;
   late List<protobuf.File> files;
   late String serverUrl;
-  late String touid;
+  String touid = DEFAULT_TO_UID;
   late String fromuid;
   final Dio dio = Dio();
   final Options options = Options(
@@ -42,106 +45,25 @@ class DataPageState extends State<DataPage> {
   late void Function(void Function()) setStateImages;
   late void Function(void Function()) setStateFiles;
 
+  // for get tab controller index
+  late BuildContext controllerContext;
   @override
   Widget build(BuildContext context) {
     final state = context.read<GlobalState>();
     serverUrl = state.serverUrl;
     fromuid = state.fromuid;
-    socket?.stream.listen((event) {
-      final data = protobuf.TransferData.fromBuffer(event);
-      if (data.type == TransferData_DataType.ERROR) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("error occurs"),
-            content: Text(data.error),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+    // TODO debug, later to delete this isinit
 
-                child: const Text("OK"),
-              )
-            ],
-          )
-        );
-      } else if (data.type == TransferData_DataType.MESSAGE) {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("there is a message from server"),
-              content: Text(data.message),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-
-                  child: const Text("OK"),
-                )
-              ],
-            )
-        );
-      } else if (data.type == TransferData_DataType.TEXT) {
-         showDialog(
-           context: context,
-           builder: (context) => AlertDialog(
-             content: Text("there is text data from ${data.fromuid}, do you accept it?"),
-             actions: [
-               TextButton(
-                 onPressed: () {
-                   Navigator.of(context).pop();
-                 },
-
-                 child: const Text("Cancel"),
-               ),
-
-               TextButton(
-                 onPressed: () {
-                   onPressCopyText(data.text);
-                   Navigator.of(context).pop();
-                 },
-
-                 child: const Text("Ok"),
-               )
-             ],
-           )
-         );
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: Text("there is image or file data from ${data.fromuid}, do you accept it?"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-
-                child: const Text("Cancel"),
-              ),
-
-              TextButton(
-                onPressed: () async {
-                  if (data.type == TransferData_DataType.IMAGE) {
-                    await onPressCopyImage(serverUrl, data.image);
-                  } else {
-                    await onPressCopyFile(serverUrl, data.file);
-                  }
-
-                  Navigator.of(context).pop();
-                },
-
-                child: const Text("Ok"),
-              )
-            ],
-          )
-        );
-      }
+    socket?.stream.listen((event) async {
+      await listenFunction(context, event);
+    }, onError: (error) {
+      onError(context, error);
+    }, onDone: () {
+      onDone(context);
     });
 
-    final child = Builder(builder: (context) {
+    final child = Builder(builder: (childContext) {
+      controllerContext = childContext;
       return Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -151,13 +73,23 @@ class DataPageState extends State<DataPage> {
               Tab(text: "file")
             ],
           ),
+
+          actions: [
+            IconButton(
+              onPressed: () {
+                onDone(context);
+              },
+
+              icon: const Icon(Icons.exit_to_app),
+            )
+          ],
         ),
 
         body: TabBarView(
           children: [
-            buildTexts(context),
-            buildImages(context),
-            buildFiles(context)
+            buildTexts(childContext),
+            buildImages(childContext),
+            buildFiles(childContext)
           ],
         ),
 
@@ -167,7 +99,7 @@ class DataPageState extends State<DataPage> {
             FloatingActionButton(
               heroTag: "refresh",
               onPressed: () async {
-                final index = await onPressRefresh(context);
+                final index = await onPressRefresh(childContext);
                 if (index == 0) {
                   setStateTexts(() {
 
@@ -186,12 +118,12 @@ class DataPageState extends State<DataPage> {
               child: const Icon(Icons.refresh),
             ),
 
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
 
             FloatingActionButton(
               heroTag: "add",
               onPressed: () {
-                onPressAdd(context);
+                onPressAdd(childContext);
               },
 
               child: const Icon(Icons.add),
@@ -232,7 +164,7 @@ class DataPageState extends State<DataPage> {
                           },
 
                           onPressDelete: () async {
-                            await onPressDelete(serverUrl, "text", text.id);
+                            await onPressDelete(serverUrl, "text", text.id.toString());
                           }
                       ),
                 ).toList(),
@@ -275,7 +207,7 @@ class DataPageState extends State<DataPage> {
                           },
 
                           onPressDelete: () async {
-                            await onPressDelete(serverUrl, "image", image.id);
+                            await onPressDelete(serverUrl, "image", image.name);
                           }
                   )).toList(),
             );
@@ -319,7 +251,7 @@ class DataPageState extends State<DataPage> {
                           },
 
                           onPressDelete: () async {
-                            await onPressDelete(serverUrl, "image", file.id);
+                            await onPressDelete(serverUrl, "file", file.name);
                           }
                       )).toList(),
             );
@@ -357,9 +289,18 @@ class DataPageState extends State<DataPage> {
       await dio.download(url, path);
       await Pasteboard.writeFiles([path]);
     } else {
-      final path = await FilePicker.platform.saveFile();
-      if (path != null) {
-        await dio.download(url, path);
+      final directory = await FilePicker.platform.getDirectoryPath();
+      if (directory != null) {
+        final path = join(directory, image.name);
+        final flag = await Permission.storage.isDenied;
+        bool result = false;
+        if (!flag) {
+          result = await Permission.storage.request().isGranted;
+        }
+
+        if (result) {
+          await dio.download(url, path);
+        }
       }
     }
   }
@@ -380,9 +321,19 @@ class DataPageState extends State<DataPage> {
       await dio.download(url, path);
       await Pasteboard.writeFiles([path]);
     } else {
-      final path = await FilePicker.platform.saveFile();
-      if (path != null) {
-        await dio.download(url, path);
+      final directory = await FilePicker.platform.getDirectoryPath();
+      if (directory != null) {
+        final path = join(directory, file.name);
+
+        final flag = await Permission.storage.isDenied;
+        bool result = false;
+        if (!flag) {
+          result = await Permission.storage.request().isGranted;
+        }
+
+        if (result) {
+          await dio.download(url, path);
+        }
       }
     }
   }
@@ -393,22 +344,28 @@ class DataPageState extends State<DataPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final users = snapshot.requireData.users;
-          users.insert(0, "select user");
+          users.insert(0, DEFAULT_TO_UID);
           users.removeWhere((element) => element == fromuid);
           final menus = users.map((user) =>
               DropdownMenuItem(
                 value: user,
                 child: Text(user),
               )).toList();
-          return DropdownButton(
-              value: "select user",
-              items: menus,
-              onChanged: (String? value) {
-                if (value != null) {
-                  touid = value;
+
+          return StatefulBuilder(builder: (context, setState) {
+            return DropdownButton(
+                value: touid,
+                items: menus,
+                onChanged: (String? value) {
+                  if (value != null) {
+                    setState(() {
+                      touid = value;
+                    });
+                  }
                 }
-              }
-          );
+            );
+          });
+
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -434,7 +391,7 @@ class DataPageState extends State<DataPage> {
           TextButton(
             onPressed: () {
               final state = context.read<GlobalState>();
-              if (touid == "select user") {
+              if (touid == DEFAULT_TO_UID) {
                 const snackbar = SnackBar(content: Text("no user select"));
                 ScaffoldMessenger.of(context).showSnackBar(snackbar);
               } else {
@@ -461,22 +418,28 @@ class DataPageState extends State<DataPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final users = snapshot.requireData.users;
-          users.insert(0, "select user");
+          users.insert(0, DEFAULT_TO_UID);
           users.removeWhere((element) => element == fromuid);
           final menus = users.map((user) =>
               DropdownMenuItem(
                 value: user,
                 child: Text(user),
               )).toList();
-          return DropdownButton(
-              value: "select user",
-              items: menus,
-              onChanged: (String? value) {
-                if (value != null) {
-                  touid = value;
+
+          return StatefulBuilder(builder: (context, setState) {
+            return DropdownButton(
+                value: touid,
+                items: menus,
+                onChanged: (String? value) {
+                  if (value != null) {
+                    setState(() {
+                      touid = value;
+                    });
+                  }
                 }
-              }
-          );
+            );
+          });
+
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -502,7 +465,7 @@ class DataPageState extends State<DataPage> {
             TextButton(
               onPressed: () {
                 final state = context.read<GlobalState>();
-                if (touid == "select user") {
+                if (touid == DEFAULT_TO_UID) {
                   const snackbar = SnackBar(content: Text("no user select"));
                   ScaffoldMessenger.of(context).showSnackBar(snackbar);
                 } else {
@@ -529,22 +492,26 @@ class DataPageState extends State<DataPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final users = snapshot.requireData.users;
-          users.insert(0, "select user");
+          users.insert(0, DEFAULT_TO_UID);
           users.removeWhere((element) => element == fromuid);
           final menus = users.map((user) =>
               DropdownMenuItem(
                 value: user,
                 child: Text(user),
               )).toList();
-          return DropdownButton(
-              value: "select user",
-              items: menus,
-              onChanged: (String? value) {
-                if (value != null) {
-                  touid = value;
+          return StatefulBuilder(builder: (context, setState) {
+            return DropdownButton(
+                value: touid,
+                items: menus,
+                onChanged: (String? value) {
+                  if (value != null) {
+                    setState(() {
+                      touid = value;
+                    });
+                  }
                 }
-              }
-          );
+            );
+          });
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -570,7 +537,7 @@ class DataPageState extends State<DataPage> {
             TextButton(
               onPressed: () {
                 final state = context.read<GlobalState>();
-                if (touid == "select user") {
+                if (touid == DEFAULT_TO_UID) {
                   const snackbar = SnackBar(content: Text("no user select"));
                   ScaffoldMessenger.of(context).showSnackBar(snackbar);
                 } else {
@@ -591,22 +558,22 @@ class DataPageState extends State<DataPage> {
     );
   }
 
-  Future<void> onPressDelete(String serverUrl, String type, int id) async {
+  Future<void> onPressDelete(String serverUrl, String type, String text) async {
     String? url;
     if (type == "text") {
-      url = join(serverUrl, "api/text", id.toString());
+      url = join(serverUrl, "api/clipboard/text", text);
       setStateTexts(() {
-        texts.removeWhere((element) => element.id == id);
+        texts.removeWhere((element) => element.id == int.parse(text));
       });
     } else if (type == "image") {
-      url = join(serverUrl, "api/image", id.toString());
+      url = join(serverUrl, "api/clipboard/image", text);
       setStateImages(() {
-        images.removeWhere((element) => element.id == id);
+        images.removeWhere((element) => element.name == text);
       });
     } else if (type == "file") {
-      url = join(serverUrl, "api/file", id.toString());
+      url = join(serverUrl, "api/clipboard/file", text);
       setStateFiles(() {
-        files.removeWhere((element) => element.id == id);
+        files.removeWhere((element) => element.name == text);
       });
     }
 
@@ -640,17 +607,29 @@ class DataPageState extends State<DataPage> {
       final url = join(serverUrl, "api/clipboard/text");
       final response = await dio.get(url, options: options);
       final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
-      texts = data.texts.list.reversed.toList();
+
+      setStateTexts(() {
+        texts = data.texts.list.reversed.toList();
+      });
+
     } else if (index == 1) {
       final url = join(serverUrl, "api/clipboard/image");
       final response = await dio.get(url, options: options);
       final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
-      images = data.images.list.reversed.toList();
+
+      setStateImages(() {
+        images = data.images.list.reversed.toList();
+      });
+
     } else {
       final url = join(serverUrl, "api/clipboard/file");
       final response = await dio.get(url, options: options);
       final data = protobuf.TransferQueryAllResponse.fromBuffer(response.data);
-      files = data.files.list.reversed.toList();
+
+      setStateFiles(() {
+        files = data.files.list.reversed.toList();
+      });
+
     }
 
     return index;
@@ -724,16 +703,50 @@ class DataPageState extends State<DataPage> {
   Future<void> addImage(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     final path = result?.files.single.path;
+    late void Function(void Function()) dialogSetState;
+
     if (path != null) {
       final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
       final url = join(serverUrl, "api/clipboard/image");
-      final response = await dio.post(url, data: formdata, options: options);
+      double rate = 0;
+
+      showDialog(context: context, builder: (context) => StatefulBuilder(builder: (context, setState) {
+        dialogSetState = setState;
+        return AlertDialog(
+          content: Text("传送进度: rate.toStringAsFixed(1)"),
+          actions: [
+            TextButton(
+              onPressed: rate != 100.0 ? null : () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("OK"),
+            )
+          ],
+        );
+      }));
+
+      await Future.delayed(const Duration(milliseconds: 10));
+
+      final response = await dio.post(
+        url,
+        data: formdata,
+        options: options,
+        onSendProgress: (int sent, int total) {
+          dialogSetState(() {
+            rate = sent / total.toDouble() * 100;
+          });
+
+        }
+      );
+
+
+
       final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
       if (transferQueryResponse.type == TransferData_DataType.ERROR) {
         final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
       } else {
-        print("get data: ${transferQueryResponse.image}");
         setStateImages(() {
           images.insert(0, transferQueryResponse.image);
         });
@@ -744,10 +757,41 @@ class DataPageState extends State<DataPage> {
   Future<void> addFile(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles();
     final path = result?.files.single.path;
+    late void Function(void Function()) dialogSetState;
+
     if (path != null) {
       final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
       final url = join(serverUrl, "api/clipboard/file");
-      final response = await dio.post(url, data: formdata, options: options);
+      double rate = 0;
+
+      showDialog(context: context, builder: (context) => StatefulBuilder(builder: (context, setState) {
+        dialogSetState = setState;
+        return AlertDialog(
+          content: Text("传送进度: rate.toStringAsFixed(1)"),
+          actions: [
+            TextButton(
+              onPressed: rate != 100.0 ? null : () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("OK"),
+            )
+          ],
+        );
+      }));
+
+      await Future.delayed(const Duration(milliseconds: 10));
+
+      final response = await dio.post(
+          url,
+          data: formdata,
+          options: options,
+          onSendProgress: (int sent, int total) {
+            dialogSetState(() {
+              rate = sent / total.toDouble() * 100;
+            });
+          }
+      );
       final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
       if (transferQueryResponse.type == TransferData_DataType.ERROR) {
         final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
@@ -758,5 +802,114 @@ class DataPageState extends State<DataPage> {
         });
       }
     }
+  }
+
+  Future<void> listenFunction(BuildContext context, dynamic event) async {
+    final data = protobuf.TransferData.fromBuffer(event);
+    if (data.type == TransferData_DataType.ERROR) {
+      listenError(context, data);
+    } else if (data.type == TransferData_DataType.NOTIFICATION) {
+      if (data.touid != fromuid) {
+        await onPressRefresh(controllerContext);
+      }
+    } else if (data.type == TransferData_DataType.TEXT) {
+      listenText(context, data);
+    } else {
+      listenImageAndFile(context, data);
+    }
+  }
+
+  void onError(BuildContext context, dynamic error) {
+    socket?.sink.close();
+    final snackbar = SnackBar(content: Text("error occurs: $error"));
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    Navigator.of(context).pop();
+  }
+
+  void onDone(BuildContext context) {
+    const snackbar = SnackBar(content: Text("connection closed"), duration: const Duration(seconds: 1),);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.of(context).pop();
+    });
+  }
+
+  void listenError(BuildContext context, protobuf.TransferData data) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("error occurs"),
+          content: Text(data.error),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("OK"),
+            )
+          ],
+        )
+    );
+  }
+
+  void listenText(BuildContext context, protobuf.TransferData data) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text("there is text data from ${data.fromuid}, do you accept it?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("Cancel"),
+            ),
+
+            TextButton(
+              onPressed: () {
+                onPressCopyText(data.text);
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("Ok"),
+            )
+          ],
+        )
+    );
+  }
+
+  void listenImageAndFile(BuildContext context, protobuf.TransferData data) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text("there is image or file data from ${data.fromuid}, do you accept it?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("Cancel"),
+            ),
+
+            TextButton(
+              onPressed: () async {
+                if (data.type == TransferData_DataType.IMAGE) {
+                  await onPressCopyImage(serverUrl, data.image);
+                } else {
+                  await onPressCopyFile(serverUrl, data.file);
+                }
+
+                Navigator.of(context).pop();
+              },
+
+              child: const Text("Ok"),
+            )
+          ],
+        )
+    );
   }
 }

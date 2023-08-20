@@ -12,58 +12,70 @@ Widget buildImageCard(BuildContext context, protobuf.Image image, {
   final state = context.read<GlobalState>();
   final serverUrl = state.serverUrl;
 
-  assert(image.name.isNotEmpty);
+  final size = MediaQuery.of(context).size;
   final url = join(serverUrl, "api/download/image", image.name);
 
   final imageFromNetwork = Image.network(url, height: 100, width: 100,);
-  final imageDescription = Row(
+
+  final left = Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
       imageFromNetwork,
       SizedBox(width: 10,),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(image.name),
+          Text(image.name, overflow: TextOverflow.ellipsis,),
           Text(image.size)
         ]
       )
     ],
   );
 
+  final right = Row(
+    children: [
+      OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.blueAccent,
+          foregroundColor: Colors.blueAccent,
+        ),
+
+        onPressed: onPressCopy,
+        child: const Text("copy", style: const TextStyle(color: Colors.white),),
+      ),
+
+      OutlinedButton(
+        style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.blueAccent
+        ),
+        onPressed: onPressShare,
+        child: const Text("share"),
+      ),
+
+      OutlinedButton(
+        style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.red
+        ),
+
+        onPressed: onPressDelete,
+        child: const Text("delete", style: const TextStyle(color: Colors.white)),
+      )
+    ],
+  );
+
+
   final row = Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      imageDescription,
-      Row(
-          children: [
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.blueAccent,
-              ),
+      SizedBox(
+        width: size.width * 0.4 * 0.9,
+        child: left,
+      ),
 
-              onPressed: onPressCopy,
-              child: const Text("copy", style: const TextStyle(color: Colors.white),),
-            ),
-
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.blueAccent
-              ),
-              onPressed: onPressShare,
-              child: const Text("share"),
-            ),
-
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.red
-              ),
-
-              onPressed: onPressDelete,
-              child: const Text("delete", style: const TextStyle(color: Colors.white)),
-            )
-          ]
+      Expanded(
+        child: right,
       )
     ],
   );
@@ -75,7 +87,7 @@ Widget buildImageCard(BuildContext context, protobuf.Image image, {
     ),
 
     child: FractionallySizedBox(
-      widthFactor: 0.8,
+      widthFactor: 0.9,
       child: row,
     )
   );

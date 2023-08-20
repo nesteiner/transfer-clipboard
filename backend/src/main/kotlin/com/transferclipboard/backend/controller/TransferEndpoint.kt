@@ -84,12 +84,27 @@ class TransferEndpoint {
         session.basicRemote.sendBinary(data)
         logger.error("error occurs: ${throwable.message ?: "fuck"}")
         throwable.printStackTrace()
-        socketmap.remove(uid);
+        socketmap.remove(uid)
     }
 
     @OnClose
     fun onClose(@PathParam("uid") uid: String) {
         socketmap.remove(uid)
         logger.info("connection of ${uid} closed")
+    }
+
+    fun notifyData() {
+        val data = transferData {
+            fromuid = SERVER_NAME
+            touid = uid
+            type = TransferData.DataType.NOTIFICATION
+            notification = "there is new data update"
+        }.let {
+            ByteBuffer.wrap(it.toByteArray())
+        }
+
+        session.basicRemote.sendBinary(data)
+
+        logger.info("sended notification to ${uid}")
     }
 }

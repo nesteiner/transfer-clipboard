@@ -15,14 +15,14 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class TransferData_DataType extends $pb.ProtobufEnum {
   static const TransferData_DataType ERROR = TransferData_DataType._(0, _omitEnumNames ? '' : 'ERROR');
-  static const TransferData_DataType MESSAGE = TransferData_DataType._(1, _omitEnumNames ? '' : 'MESSAGE');
+  static const TransferData_DataType NOTIFICATION = TransferData_DataType._(1, _omitEnumNames ? '' : 'NOTIFICATION');
   static const TransferData_DataType TEXT = TransferData_DataType._(2, _omitEnumNames ? '' : 'TEXT');
   static const TransferData_DataType IMAGE = TransferData_DataType._(3, _omitEnumNames ? '' : 'IMAGE');
   static const TransferData_DataType FILE = TransferData_DataType._(4, _omitEnumNames ? '' : 'FILE');
 
   static const $core.List<TransferData_DataType> values = <TransferData_DataType> [
     ERROR,
-    MESSAGE,
+    NOTIFICATION,
     TEXT,
     IMAGE,
     FILE,

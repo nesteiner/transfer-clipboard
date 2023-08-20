@@ -1,10 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/protobuf/.proto.pb.dart' as protobuf;
 
-void main() {
-  runApp(App());
-}
+void main() => runApp(App());
 
 class App extends StatelessWidget {
   @override
@@ -16,36 +12,49 @@ class App extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  HomePageState createState() => HomePageState();
-}
-
-class HomePageState extends State<HomePage> {
-  List<int> nums = [1, 2, 3];
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      body: Center(
-        child: buildBody(context)
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            nums.insert(0, 10);
-          });
-        },
-
-        child: const Icon(Icons.add),
-      ),
+      body: buildBody(context),
     );
   }
 
   Widget buildBody(BuildContext context) {
-    return Column(
-      children: nums.map((e) => Text(e.toString())).toList(),
+    final size = MediaQuery.of(context).size;
+
+    final left = SizedBox(
+      width: size.width * 0.4,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.red
+        ),
+      ),
+    );
+
+    final right = SizedBox(
+      width: size.width * 0.6,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.blue
+        ),
+      ),
+    );
+
+    final child = FractionallySizedBox(
+      widthFactor: 0.9,
+      child: Row(
+        children: [
+          left,
+          Expanded(child: right)
+        ],
+      ),
+    );
+
+    return SizedBox(
+      width: double.infinity,
+      child: child,
     );
   }
 }
