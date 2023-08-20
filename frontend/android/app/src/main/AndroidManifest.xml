@@ -6,8 +6,8 @@
 
     <application
         android:label="frontend"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:name="@string/app_name"
+        android:icon="@drawable/clipboard"
         android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"

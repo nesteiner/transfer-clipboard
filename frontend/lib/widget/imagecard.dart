@@ -88,7 +88,10 @@ Widget buildImageCard(BuildContext context, protobuf.Image image, {
 
     child: FractionallySizedBox(
       widthFactor: 0.9,
-      child: row,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: row,
+      ),
     )
   );
 

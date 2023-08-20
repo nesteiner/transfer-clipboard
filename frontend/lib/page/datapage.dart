@@ -47,12 +47,20 @@ class DataPageState extends State<DataPage> {
 
   // for get tab controller index
   late BuildContext controllerContext;
+  // for show snackbar
+  late ScaffoldMessengerState messengerState;
+  late NavigatorState navigatorState;
+
+  // for don't use context in async function
+  late NavigatorState dialogNaviagtor;
+
   @override
   Widget build(BuildContext context) {
+    messengerState = ScaffoldMessenger.of(context);
+    navigatorState = Navigator.of(context);
     final state = context.read<GlobalState>();
     serverUrl = state.serverUrl;
     fromuid = state.fromuid;
-    // TODO debug, later to delete this isinit
 
     socket?.stream.listen((event) async {
       await listenFunction(context, event);
@@ -299,7 +307,13 @@ class DataPageState extends State<DataPage> {
         }
 
         if (result) {
+          const snackbarLoading = SnackBar(content: Center(child: CircularProgressIndicator()), duration: Duration(seconds: 100),);
+          messengerState.showSnackBar(snackbarLoading);
           await dio.download(url, path);
+          messengerState.hideCurrentSnackBar();
+
+          final snackbarDone = SnackBar(content: Text("write to $path success"),);
+          messengerState.showSnackBar(snackbarDone);
         }
       }
     }
@@ -332,7 +346,13 @@ class DataPageState extends State<DataPage> {
         }
 
         if (result) {
+          const snackbarLoading = SnackBar(content: Center(child: CircularProgressIndicator()), duration: Duration(seconds: 100),);
+          messengerState.showSnackBar(snackbarLoading);
           await dio.download(url, path);
+          messengerState.hideCurrentSnackBar();
+
+          final snackbarDone = SnackBar(content: Text("write to $path success"),);
+          messengerState.showSnackBar(snackbarDone);
         }
       }
     }
@@ -393,7 +413,7 @@ class DataPageState extends State<DataPage> {
               final state = context.read<GlobalState>();
               if (touid == DEFAULT_TO_UID) {
                 const snackbar = SnackBar(content: Text("no user select"));
-                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                messengerState.showSnackBar(snackbar);
               } else {
                 final data = protobuf.TransferData.create();
                 data.fromuid = state.fromuid;
@@ -527,8 +547,8 @@ class DataPageState extends State<DataPage> {
           content: futurebuilder,
           actions: [
             TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
+              onPressed: () {
+
               },
 
               child: const Text("cancel"),
@@ -559,7 +579,7 @@ class DataPageState extends State<DataPage> {
   }
 
   Future<void> onPressDelete(String serverUrl, String type, String text) async {
-    String? url;
+    String url = "";
     if (type == "text") {
       url = join(serverUrl, "api/clipboard/text", text);
       setStateTexts(() {
@@ -577,7 +597,8 @@ class DataPageState extends State<DataPage> {
       });
     }
 
-    await dio.delete(url!);
+    url += "?uid=${fromuid}";
+    await dio.delete(url);
   }
 
   Future<protobuf.OnlineUsers> findOnlineUsers() async {
@@ -636,6 +657,8 @@ class DataPageState extends State<DataPage> {
   }
 
   void addText(BuildContext context) {
+    dialogNaviagtor = Navigator.of(context);
+
     final textfield = TextField(
       controller: controller,
     );
@@ -668,14 +691,14 @@ class DataPageState extends State<DataPage> {
           ScaffoldMessenger.of(context).showSnackBar(snackbar);
         } else {
 
-          final response = await dio.post(join(serverUrl, "api/clipboard/text"), data: {
+          final response = await dio.post(join(serverUrl, "api/clipboard/text?uid=${fromuid}"), data: {
             "text": controller.text
           }, options: options);
 
           final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
           if (transferQueryResponse.type == TransferData_DataType.ERROR) {
             final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
-            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+            messengerState.showSnackBar(snackbar);
           } else {
             setStateTexts(() {
               texts.insert(0, transferQueryResponse.text);
@@ -683,7 +706,7 @@ class DataPageState extends State<DataPage> {
           }
 
           controller.text = "";
-          Navigator.of(context).pop();
+          dialogNaviagtor.pop();
         }
       },
 
@@ -707,17 +730,19 @@ class DataPageState extends State<DataPage> {
 
     if (path != null) {
       final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
-      final url = join(serverUrl, "api/clipboard/image");
+      final url = join(serverUrl, "api/clipboard/image?uid=${fromuid}");
       double rate = 0;
 
       showDialog(context: context, builder: (context) => StatefulBuilder(builder: (context, setState) {
+        dialogNaviagtor = Navigator.of(context);
         dialogSetState = setState;
         return AlertDialog(
-          content: Text("传送进度: rate.toStringAsFixed(1)"),
+          content: Text("传送进度: ${rate.toStringAsFixed(1)}%"),
           actions: [
             TextButton(
               onPressed: rate != 100.0 ? null : () {
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
+                dialogNaviagtor.pop();
               },
 
               child: const Text("OK"),
@@ -745,7 +770,7 @@ class DataPageState extends State<DataPage> {
       final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
       if (transferQueryResponse.type == TransferData_DataType.ERROR) {
         final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        messengerState.showSnackBar(snackbar);
       } else {
         setStateImages(() {
           images.insert(0, transferQueryResponse.image);
@@ -761,13 +786,13 @@ class DataPageState extends State<DataPage> {
 
     if (path != null) {
       final formdata = FormData.fromMap({"file": await MultipartFile.fromFile(path)});
-      final url = join(serverUrl, "api/clipboard/file");
+      final url = join(serverUrl, "api/clipboard/file?uid=${fromuid}");
       double rate = 0;
 
       showDialog(context: context, builder: (context) => StatefulBuilder(builder: (context, setState) {
         dialogSetState = setState;
         return AlertDialog(
-          content: Text("传送进度: rate.toStringAsFixed(1)"),
+          content: Text("传送进度: ${rate.toStringAsFixed(1)}%"),
           actions: [
             TextButton(
               onPressed: rate != 100.0 ? null : () {
@@ -795,7 +820,7 @@ class DataPageState extends State<DataPage> {
       final transferQueryResponse = protobuf.TransferQueryResponse.fromBuffer(response.data);
       if (transferQueryResponse.type == TransferData_DataType.ERROR) {
         final snackbar = SnackBar(content: Text("error occurs: ${transferQueryResponse.error}"));
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        messengerState.showSnackBar(snackbar);
       } else {
         setStateFiles(() {
           files.insert(0, transferQueryResponse.file);
@@ -806,15 +831,17 @@ class DataPageState extends State<DataPage> {
 
   Future<void> listenFunction(BuildContext context, dynamic event) async {
     final data = protobuf.TransferData.fromBuffer(event);
+
     if (data.type == TransferData_DataType.ERROR) {
       listenError(context, data);
     } else if (data.type == TransferData_DataType.NOTIFICATION) {
-      if (data.touid != fromuid) {
+      if (data.notification != "connected") {
+        // how to solve duplicate refresh
         await onPressRefresh(controllerContext);
       }
     } else if (data.type == TransferData_DataType.TEXT) {
       listenText(context, data);
-    } else {
+    } else{
       listenImageAndFile(context, data);
     }
   }
@@ -823,34 +850,37 @@ class DataPageState extends State<DataPage> {
     socket?.sink.close();
     final snackbar = SnackBar(content: Text("error occurs: $error"));
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
-    Navigator.of(context).pop();
+    navigatorState.pop();
   }
 
   void onDone(BuildContext context) {
-    const snackbar = SnackBar(content: Text("connection closed"), duration: const Duration(seconds: 1),);
+    const snackbar = SnackBar(content: Text("connection closed"), duration: Duration(seconds: 1),);
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
     Future.delayed(const Duration(seconds: 1), () {
-      Navigator.of(context).pop();
+      navigatorState.pop();
     });
   }
 
   void listenError(BuildContext context, protobuf.TransferData data) {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("error occurs"),
-          content: Text(data.error),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        builder: (context) =>
+            AlertDialog(
+              title: const Text("error occurs"),
+              content: Text(data.error),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    print(navigatorState.canPop());
+                    Navigator.of(context).pop();
+                    navigatorState.pop();
+                  },
 
-              child: const Text("OK"),
+                  child: const Text("OK"),
+                )
+              ],
             )
-          ],
-        )
     );
   }
 
@@ -882,6 +912,8 @@ class DataPageState extends State<DataPage> {
   }
 
   void listenImageAndFile(BuildContext context, protobuf.TransferData data) {
+    dialogNaviagtor = Navigator.of(context);
+
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -897,13 +929,23 @@ class DataPageState extends State<DataPage> {
 
             TextButton(
               onPressed: () async {
-                if (data.type == TransferData_DataType.IMAGE) {
-                  await onPressCopyImage(serverUrl, data.image);
-                } else {
-                  await onPressCopyFile(serverUrl, data.file);
+                try {
+                  if (data.type == TransferData_DataType.IMAGE) {
+                    await onPressCopyImage(serverUrl, data.image);
+                  } else {
+                    await onPressCopyFile(serverUrl, data.file);
+                  }
+                } on DioException catch (exception) {
+                  final snackbar = SnackBar(content: Text(exception.message ?? "fuck"));
+                  messengerState.hideCurrentSnackBar();
+                  messengerState.showSnackBar(snackbar);
+                } on Exception catch (exception) {
+                  messengerState.hideCurrentSnackBar();
+                  final snackbar = SnackBar(content: Text(exception.toString()));
+                  messengerState.showSnackBar(snackbar);
                 }
 
-                Navigator.of(context).pop();
+                dialogNaviagtor.pop();
               },
 
               child: const Text("Ok"),

@@ -17,44 +17,21 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      body: buildBody(context),
+      body: Center(child: buildBody(context)),
     );
   }
 
   Widget buildBody(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    return OutlinedButton(
+      onPressed: () {
+        final messenger = ScaffoldMessenger.of(context);
+        const snackbar = SnackBar(content: Text("Hello World"), duration: const Duration(seconds: 100,));
+        messenger.showSnackBar(snackbar);
 
-    final left = SizedBox(
-      width: size.width * 0.4,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.red
-        ),
-      ),
-    );
+        messenger.hideCurrentSnackBar();
+      },
 
-    final right = SizedBox(
-      width: size.width * 0.6,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.blue
-        ),
-      ),
-    );
-
-    final child = FractionallySizedBox(
-      widthFactor: 0.9,
-      child: Row(
-        children: [
-          left,
-          Expanded(child: right)
-        ],
-      ),
-    );
-
-    return SizedBox(
-      width: double.infinity,
-      child: child,
+      child: const Text("click me"),
     );
   }
 }

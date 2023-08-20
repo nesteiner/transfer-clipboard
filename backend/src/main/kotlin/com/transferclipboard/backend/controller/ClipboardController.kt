@@ -39,12 +39,16 @@ class ClipboardController {
     lateinit var fileService: FileService
 
     @PostMapping("/text")
-    fun insertText(@RequestBody @Valid request: InsertTextRequest, bindingResult: BindingResult): TransferQueryResponse {
+    fun insertText(@RequestBody @Valid request: InsertTextRequest, bindingResult: BindingResult, @RequestParam("uid") uid: String): TransferQueryResponse {
         val result = textService.insertOne(request)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }
+            .forEach {
+                it.notifyData()
+            }
 
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.TEXT
@@ -76,21 +80,29 @@ class ClipboardController {
     }
 
     @DeleteMapping("/text/{id}")
-    fun deleteText(@PathVariable id: Int) {
+    fun deleteText(@PathVariable id: Int, @RequestParam("uid") uid: String) {
         textService.deleteOne(id)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }
+            .forEach {
+                it.notifyData()
+            }
     }
 
     @PostMapping("/image")
-    fun insertImage(@RequestParam("file") file: MultipartFile): TransferQueryResponse {
+    fun insertImage(@RequestParam("file") file: MultipartFile, @RequestParam("uid") uid: String): TransferQueryResponse {
         val result = imageService.insertOne(file)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }
+            .forEach {
+                it.notifyData()
+            }
 
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.IMAGE
@@ -123,21 +135,29 @@ class ClipboardController {
     }
 
     @DeleteMapping("/image/{name}")
-    fun deleteImage(@PathVariable("name") name: String) {
+    fun deleteImage(@PathVariable("name") name: String, @RequestParam("uid") uid: String) {
         imageService.deleteOne(name)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }
+            .forEach {
+                it.notifyData()
+            }
     }
 
     @PostMapping("/file")
-    fun insertFile(@RequestParam("file") file: MultipartFile): TransferQueryResponse {
+    fun insertFile(@RequestParam("file") file: MultipartFile, @RequestParam("uid") uid: String): TransferQueryResponse {
         val result = fileService.insertOne(file)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }
+            .forEach {
+                it.notifyData()
+            }
 
         return transferQueryResponse {
             type = TransferQueryResponse.DataType.FILE
@@ -170,12 +190,15 @@ class ClipboardController {
     }
 
     @DeleteMapping("/file/{name}")
-    fun deleteFile(@PathVariable("name") name: String) {
+    fun deleteFile(@PathVariable("name") name: String, @RequestParam("uid") uid: String) {
         fileService.deleteOne(name)
 
-        TransferEndpoint.socketmap.values.forEach {
-            it.notifyData()
-        }
+        TransferEndpoint.socketmap.values
+            .filter {
+                it.uid != uid
+            }.forEach {
+                it.notifyData()
+            }
     }
 
     @GetMapping("/user")

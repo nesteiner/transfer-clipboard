@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/page/datapage.dart';
+import 'package:frontend/protobuf/.proto.pb.dart' as protobuf;
 import 'package:frontend/state.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
@@ -27,8 +28,8 @@ class StartPage extends StatelessWidget {
       ),
 
       onChanged: (String value) {
-        state.serverUrl = "http://${value}";
-        state.websocketUrl = "ws://${value}";
+        state.serverUrl = "http://$value";
+        state.websocketUrl = "ws://$value";
       },
     );
 
@@ -62,11 +63,13 @@ class StartPage extends StatelessWidget {
         children: [
           sizedbox,
           OutlinedButton(
-            onPressed: () {
+            onPressed: () async {
               try {
                 final url = join(state.websocketUrl, "api/transfer", state.fromuid);
                 socket = IOWebSocketChannel.connect(url);
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => DataPage()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => DataPage()));
+
               } on WebSocketChannelException catch (exception) {
                 showDialog(context: context, builder: (context) => AlertDialog(
                   content: Text("connect failed: ${exception.message ?? "fuck"}"),

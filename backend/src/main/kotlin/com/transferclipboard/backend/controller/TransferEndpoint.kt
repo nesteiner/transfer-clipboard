@@ -12,6 +12,7 @@ import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.io.IOException
 import java.nio.ByteBuffer
 
 @Component
@@ -42,6 +43,17 @@ class TransferEndpoint {
 
             session.basicRemote.sendBinary(data)
         } else {
+            val data = transferData {
+                fromuid = SERVER_NAME
+                touid = uid
+                type = ProtobufData.TransferData.DataType.NOTIFICATION
+                notification = "connected"
+            }.let {
+                ByteBuffer.wrap(it.toByteArray())
+            }
+
+            session.basicRemote.sendBinary(data);
+
             this.uid = uid
             this.session = session
             socketmap.put(uid, this)
@@ -81,7 +93,12 @@ class TransferEndpoint {
             ByteBuffer.wrap(it.toByteArray())
         }
 
-        session.basicRemote.sendBinary(data)
+        try {
+            session.basicRemote.sendBinary(data)
+        } catch (excecption: IOException) {
+            logger.error("error in send error: ${excecption.message ?: "Fuck"}")
+        }
+
         logger.error("error occurs: ${throwable.message ?: "fuck"}")
         throwable.printStackTrace()
         socketmap.remove(uid)

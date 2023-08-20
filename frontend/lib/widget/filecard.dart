@@ -78,7 +78,10 @@ Widget buildFileCard(BuildContext context, protobuf.File file, {
 
     child: FractionallySizedBox(
       widthFactor: 0.9,
-      child: row,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: row,
+      ),
     ),
   );
 
