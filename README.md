@@ -1,25 +1,25 @@
 
 # Table of Contents
 
-1.  [介绍](#org0d0978f)
-2.  [技术栈](#orgf713aff)
-    1.  [后端](#org01f00a0)
-    2.  [前端](#orgebe1c03)
-3.  [使用](#orgd0e2a27)
-    1.  [连接服务器](#orga281c40)
-    2.  [剪切板列表](#org2a10e59)
-    3.  [复制剪切板内容](#orgae35e90)
-    4.  [分享剪切板内容](#org8897c37)
-    5.  [上传剪切板内容](#org38f7a17)
-4.  [To Install](#orgd53b70f)
-    1.  [backend](#org9fa4d83)
-    2.  [frontend](#orgbcc97ba)
-5.  [FIXME](#org3900846)
-6.  [Feature](#org443b42a)
+1.  [介绍](#orgd5f718f)
+2.  [技术栈](#org6dc19e7)
+    1.  [后端](#org5bf01d6)
+    2.  [前端](#orgf935aac)
+3.  [使用](#orgba2334d)
+    1.  [连接服务器](#org2f9fdae)
+    2.  [剪切板列表](#org363b3df)
+    3.  [复制剪切板内容](#org421014a)
+    4.  [分享剪切板内容](#orgb951071)
+    5.  [上传剪切板内容](#orge068409)
+4.  [To Install](#orgd4ba3d1)
+    1.  [backend](#orge81849b)
+    2.  [frontend](#orgf895454)
+5.  [FIXME](#org443f656)
+6.  [Feature](#orgcfb2281)
 
 
 
-<a id="org0d0978f"></a>
+<a id="orgd5f718f"></a>
 
 # 介绍
 
@@ -32,12 +32,12 @@
 需要通过前端程序访问后端来实现剪切板管理，kde connect 是不需要后端的  
 
 
-<a id="orgf713aff"></a>
+<a id="org6dc19e7"></a>
 
 # 技术栈
 
 
-<a id="org01f00a0"></a>
+<a id="org5bf01d6"></a>
 
 ## 后端
 
@@ -49,7 +49,7 @@
 6.  protobuf-kotlin
 
 
-<a id="orgebe1c03"></a>
+<a id="orgf935aac"></a>
 
 ## 前端
 
@@ -64,12 +64,12 @@
 9.  permission<sub>handler</sub>
 
 
-<a id="orgd0e2a27"></a>
+<a id="orgba2334d"></a>
 
 # 使用
 
 
-<a id="orga281c40"></a>
+<a id="org2f9fdae"></a>
 
 ## 连接服务器
 
@@ -78,7 +78,7 @@
 输入服务器地址(ip:port)，登陆名后，点击连接，即可进入剪切板管理  
 
 
-<a id="org2a10e59"></a>
+<a id="org363b3df"></a>
 
 ## 剪切板列表
 
@@ -89,7 +89,7 @@
 ![img](images/使用/2023-08-20_18-17-13_screenshot.png)  
 
 
-<a id="orgae35e90"></a>
+<a id="org421014a"></a>
 
 ## 复制剪切板内容
 
@@ -100,10 +100,10 @@
 
 不过在 Android 平台下复制 图片/文件 内容时，flutter的 **file<sub>picker</sub>** 没有实现 `saveFiles` 这个方法，  
 所以需要手动设置保存的目录路径，才会把文件下载过来  
-![img](images/使用/tempimage.jpg)  
 
+<img src="images/使用/tempimage.jpg" style="height:800px"/>  
 
-<a id="org8897c37"></a>
+<a id="orgb951071"></a>
 
 ## 分享剪切板内容
 
@@ -111,12 +111,14 @@
 
 点击 share 按扭，需要你选择发送的用户，然后点击 send  
 此时对端会弹出一个对话框  
-![img](images/使用/tempimage1.jpg)  
+
+<img src="images/使用/tempimage1.jpg" style="height:800px"/>  
+
 点击OK接收数据，如果目标是 Linux/Windows ，会将数据复制到目标剪切板  
 如果目标是 Android/iOS， 需要你选择保存的目录路径  
 
 
-<a id="org38f7a17"></a>
+<a id="orge068409"></a>
 
 ## 上传剪切板内容
 
@@ -126,12 +128,12 @@
 -   如果是 image/file ，他会调用 `FilePicker.platform.pickFiles` ，弹出一个对话框让你选择文件
 
 
-<a id="orgd53b70f"></a>
+<a id="orgd4ba3d1"></a>
 
 # To Install
 
 
-<a id="org9fa4d83"></a>
+<a id="orge81849b"></a>
 
 ## backend
 
@@ -175,7 +177,7 @@
     java -jar build/libs/backend-0.0.1-SNAPSHOT.jar
 
 
-<a id="orgbcc97ba"></a>
+<a id="orgf895454"></a>
 
 ## frontend
 
@@ -186,7 +188,7 @@
     flutter build --release
 
 
-<a id="org3900846"></a>
+<a id="org443f656"></a>
 
 # FIXME
 
@@ -204,7 +206,7 @@
 -   [X] duplicate name
 
 
-<a id="org443b42a"></a>
+<a id="orgcfb2281"></a>
 
 # Feature
 
