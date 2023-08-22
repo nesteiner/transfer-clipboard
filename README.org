@@ -1,4 +1,5 @@
 #+title: 剪切板中转站
+#+options: \n:t
 
 * 介绍
 我平时的工作环境是 Linux + 手机，有时候我需要把文件从手机传到电脑，但是我发现在Linux的QQ无法使用 *我的文件*
@@ -53,7 +54,7 @@
 
 不过在 Android 平台下复制 图片/文件 内容时，flutter的 *file_picker* 没有实现 =saveFiles= 这个方法，
 所以需要手动设置保存的目录路径，才会把文件下载过来
-[[file:images/使用/tempimage]]
+[[file:images/使用/tempimage.jpg]]
 
 ** 分享剪切板内容
 
@@ -62,7 +63,7 @@
 
 点击 share 按扭，需要你选择发送的用户，然后点击 send
 此时对端会弹出一个对话框
-[[file:images/使用/tempimage1]]
+[[file:images/使用/tempimage1.jpg]]
 点击OK接收数据，如果目标是 Linux/Windows ，会将数据复制到目标剪切板
 如果目标是 Android/iOS， 需要你选择保存的目录路径
 
@@ -146,4 +147,4 @@ file:
 - [X] handle connection lose exception
 - [X] handle error when connect
 - [X] show dialog for uploading file
-- [ ] android icon
+- [X] android icon
